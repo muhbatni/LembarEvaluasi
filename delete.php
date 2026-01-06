@@ -2,7 +2,7 @@
 include 'koneksi.php';
 
 if (!isset($_GET['id'])) {
-    header('Location: lihat_data.php');
+    header('Location: index.php');
     exit;
 }
 
@@ -26,9 +26,9 @@ $delete_query = "DELETE FROM evaluasi WHERE id = $id";
 $result = pg_query($conn, $delete_query);
 
 if ($result) {
-    header('Location: lihat_data.php?deleted=success');
+    header('Location: index.php?deleted=success');
 } else {
-    header('Location: lihat_data.php?deleted=error');
+    header('Location: index.php?deleted=error');
 }
 
 ?>

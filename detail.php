@@ -2,7 +2,7 @@
 include 'koneksi.php';
 
 if (!isset($_GET['id'])) {
-    header('Location: lihat_data.php');
+    header('Location: index.php');
     exit;
 }
 
@@ -11,7 +11,7 @@ $query = "SELECT * FROM evaluasi WHERE id = $id";
 $result = pg_query($conn, $query);
 
 if (pg_num_rows($result) == 0) {
-    header('Location: lihat_data.php');
+    header('Location: index.php');
     exit;
 }
 
@@ -511,7 +511,7 @@ function getNilaiText($nilai) {
         </div>
 
         <div class="actions">
-            <a href="lihat_data.php" class="btn btn-back">← Kembali ke Daftar</a>
+            <a href="index.php" class="btn btn-back">← Kembali ke Daftar</a>
             <a href="javascript:window.print()" class="btn btn-print">🖨️ Cetak</a>
         </div>
     </div>
