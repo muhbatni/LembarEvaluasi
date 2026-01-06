@@ -1,768 +1,713 @@
+<?php
+include 'koneksi.php';
+
+// Handle delete all data
+if (isset($_GET['delete_all']) && $_GET['delete_all'] == 'confirm') {
+    // Hapus semua file sertifikasi
+    $query_files = "SELECT sertifikasi FROM evaluasi WHERE sertifikasi IS NOT NULL";
+    $result_files = pg_query($conn, $query_files);
+    
+    while ($file = pg_fetch_assoc($result_files)) {
+        $file_path = 'uploads/' . $file['sertifikasi'];
+        if (file_exists($file_path)) {
+            unlink($file_path);
+        }
+    }
+    
+    // Hapus semua data dari database
+    $delete_all_query = "DELETE FROM evaluasi";
+    $result_delete = pg_query($conn, $delete_all_query);
+    
+    if ($result_delete) {
+        header('Location: index.php?deleted_all=success');
+    } else {
+        header('Location: index.php?deleted_all=error');
+    }
+    exit;
+}
+
+// Pagination
+$limit = 10; // Jumlah data per halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Search functionality
+$search = isset($_GET['search']) ? pg_escape_string($conn, $_GET['search']) : '';
+$where = "";
+if ($search != '') {
+    $where = "WHERE judul_pelatihan ILIKE '%$search%' OR nama ILIKE '%$search%'";
+}
+
+// Count total records
+$count_query = "SELECT COUNT(*) as total FROM evaluasi $where";
+$count_result = pg_query($conn, $count_query);
+$total_records = pg_fetch_assoc($count_result)['total'];
+$total_pages = ceil($total_records / $limit);
+
+// Get data with pagination
+$query = "SELECT * FROM evaluasi $where ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
+$result = pg_query($conn, $query);
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lembar Evaluasi Pelatihan</title>
+    <title>Data Evaluasi Pelatihan</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 20px auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
-            background-color: #f5f5f5;
         }
 
         .container {
-            background-color: white;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
         .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .info-box {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .info-box .left {
-            width: 48%;
-        }
-
-        .info-box .right {
-            width: 48%;
-        }
-
-        table.legend {
-            width: 100%;
-            margin: 20px 0;
-            border-collapse: collapse;
-        }
-
-        table.legend td {
-            padding: 8px;
-            border: 1px solid #ddd;
-        }
-
-        .note {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-left: 4px solid #4CAF50;
-            margin: 20px 0;
-            font-style: italic;
-            color: #555;
-        }
-
-        .divider {
-            border-top: 2px solid #333;
-            margin: 30px 0;
-        }
-
-        .section-title {
-            font-weight: bold;
-            font-size: 16px;
-            margin: 20px 0 15px 0;
-            text-transform: uppercase;
-        }
-
-        .rating-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #fafafa;
-            border-radius: 4px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
         }
 
-        .rating-row label {
-            flex: 1;
-            margin: 0;
-        }
-
-        .rating-options {
+        h1 {
+            color: #333;
+            font-size: 28px;
             display: flex;
-            gap: 15px;
+            align-items: center;
+            gap: 10px;
         }
 
-        .rating-options input[type="radio"] {
-            margin-right: 5px;
-        }
-
-        .two-columns {
+        .header-actions {
             display: flex;
-            justify-content: space-between;
-            gap: 30px;
+            gap: 10px;
+            align-items: center;
         }
 
-        .column {
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
             flex: 1;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .signature-section {
-            margin-top: 40px;
-            text-align: center;
-        }
-
-        .signature-box {
-            display: inline-block;
-            margin: 20px;
-            text-align: center;
-        }
-
-        .signature-line {
-            border-top: 1px solid #333;
-            margin-top: 60px;
-            padding-top: 5px;
-            min-width: 200px;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .submit-section {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        /* Style untuk upload file */
-        .upload-box {
-            border: 2px dashed #4CAF50;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
             border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            background-color: #f9fff9;
-            margin-top: 10px;
-            transition: all 0.3s ease;
+            font-size: 14px;
+            transition: border-color 0.3s;
         }
 
-        .upload-box:hover {
-            border-color: #45a049;
-            background-color: #f0fff0;
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
-        .upload-box input[type="file"] {
-            display: none;
-        }
-
-        .upload-label {
-            cursor: pointer;
+        .btn {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 24px;
             background-color: #4CAF50;
             color: white;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .upload-label:hover {
-            background-color: #45a049;
-        }
-
-        .file-info {
-            margin-top: 10px;
-            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
             font-size: 14px;
         }
 
-        .file-name {
-            margin-top: 10px;
-            padding: 8px;
-            background-color: #e8f5e9;
-            border-radius: 4px;
-            color: #2e7d32;
-            font-weight: bold;
+        .btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
         }
 
-        .upload-icon {
-            font-size: 48px;
-            color: #4CAF50;
-            margin-bottom: 10px;
+        .btn-primary {
+            background-color: #667eea;
         }
 
-        .preview-image {
-            max-width: 300px;
-            max-height: 300px;
-            margin-top: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px;
+        .btn-primary:hover {
+            background-color: #5568d3;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .text-like {
-            border: none;
-            background: transparent;
-            outline: none;
+        .btn-danger {
+            background-color: #f44336;
+        }
 
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-            line-height: inherit;
+        .btn-danger:hover {
+            background-color: #da190b;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
 
-            padding: 0;
-            margin: 0;
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .line-input {
-            border: none;
-            border-bottom: 1px solid #333;
-            background: transparent;
-            outline: none;
-
-            font-family: inherit;
-            font-size: inherit;
-            text-align: center;
+        .stat-card h3 {
+            font-size: 32px;
+            margin-bottom: 5px;
         }
 
-        .ttd-wrapper {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
+        .stat-card p {
+            font-size: 14px;
+            opacity: 0.9;
         }
 
-        .ttd-box {
-            width: 45%;
-            text-align: center;
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .ttd-space {
-            height: 70px;
-        }
-
-        .line-input {
+        table {
             width: 100%;
-            border: none;
-            border-bottom: 1px solid #000;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover {
+            background-color: #f8f9ff;
+        }
+
+        .no-data {
             text-align: center;
-            padding: 5px 0;
+            padding: 60px 20px;
+            color: #999;
         }
 
-        .line-input:focus {
-            outline: none;
+        .no-data-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
         }
 
-        .nip-row {
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .badge-1 {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .badge-2 {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .badge-3 {
+            background-color: #fff9c4;
+            color: #f57f17;
+        }
+
+        .badge-4 {
+            background-color: #f1f8e9;
+            color: #558b2f;
+        }
+
+        .badge-5 {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            margin: 2px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-detail {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-detail:hover {
+            background-color: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(244, 67, 54, 0.3);
+        }
+
+        .file-link {
+            color: #2196F3;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .file-link:hover {
+            text-decoration: underline;
+        }
+
+        .pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 10px;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
         }
 
-        .nip-row input {
-            border: none;
-            border-bottom: 1px dotted #000;
-            margin-left: 5px;
-            width: 150px;
-            text-align: center;
+        .pagination a,
+        .pagination span {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
         }
 
-        .nip-row input:focus {
-            outline: none;
+        .pagination a:hover {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
         }
 
-        .ttd-title {
-            min-height: 50px;
+        .pagination .active {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
         }
 
-        .essay {
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
+        .pagination .disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #f44336;
+            font-size: 24px;
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .close-btn {
+            background-color: #999;
+        }
+
+        .close-btn:hover {
+            background-color: #777;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 10px;
+            }
+
+            .modal-content {
+                margin: 30% auto;
+                width: 95%;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <?php if (isset($_GET['deleted'])): ?>
+            <?php if ($_GET['deleted'] == 'success'): ?>
+                <div class="alert alert-success">
+                    ✓ Data berhasil dihapus!
+                </div>
+            <?php else: ?>
+                <div class="alert alert-error">
+                    ✗ Gagal menghapus data!
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['deleted_all'])): ?>
+            <?php if ($_GET['deleted_all'] == 'success'): ?>
+                <div class="alert alert-success">
+                    ✓ Semua data evaluasi berhasil dihapus!
+                </div>
+            <?php else: ?>
+                <div class="alert alert-error">
+                    ✗ Gagal menghapus semua data!
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+
         <div class="header">
-            <h1>Lembar Evaluasi Pelatihan</h1>
+            <h1>📊 Data Evaluasi Pelatihan</h1>
+            <div class="header-actions">
+                <a href="form.php" class="btn">+ Tambah Evaluasi Baru</a>
+                <?php if ($total_records > 0): ?>
+                    <button onclick="openDeleteAllModal()" class="btn btn-danger">🗑️ Hapus Semua Data</button>
+                <?php endif; ?>
+            </div>
         </div>
 
-        <form action="proses.php" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label>Judul Pelatihan / Workshop:</label>
-                <input type="text" name="judul_pelatihan" required class="essay">
+        <!-- Statistics Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3><?= $total_records ?></h3>
+                <p>Total Evaluasi</p>
             </div>
-
-            <table class="legend">
-                <tr>
-                    <td><strong>Nilai</strong></td>
-                    <td><strong>Keterangan</strong></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Buruk</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Kurang</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Cukup</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Bagus</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Memuaskan</td>
-                </tr>
-            </table>
-
-            <div class="info-box">
-                <div class="left">
-                    <div class="form-group">
-                        <label>Nama:</label>
-                        <input type="text" name="nama" required class="essay">
-                    </div>
-                </div>
-                <div class="right">
-                    <div class="form-group">
-                        <label>Waktu:</label>
-                        <input type="text" name="waktu" required class="essay">
-                    </div>
-                </div>
+            <div class="stat-card">
+                <h3><?= $total_pages ?></h3>
+                <p>Total Halaman</p>
             </div>
-
-            <!-- Upload Sertifikasi -->
-            <div class="form-group">
-                <label>Upload Sertifikat (JPG/PNG/PDF):</label>
-                <div class="upload-box">
-                    <div class="upload-icon">📄</div>
-                    <label for="sertifikasi" class="upload-label">Pilih File</label>
-                    <input type="file" id="sertifikasi" name="sertifikasi" accept=".jpg,.jpeg,.png,.pdf"
-                        onchange="displayFileName(this)">
-                    <div class="file-info">Format yang didukung: JPG, PNG, PDF (Max: 5MB)</div>
-                    <div id="fileNameDisplay"></div>
-                    <div id="imagePreview"></div>
-                </div>
+            <div class="stat-card">
+                <h3><?= $page ?></h3>
+                <p>Halaman Saat Ini</p>
             </div>
+        </div>
 
-            <div class="note">
-                Kuesioner ini dipergunakan untuk perbaikan berkelanjutan, mohon diisi dengan sungguh-sungguh sesuai
-                kondisi. Jika anda lupa atau ragu silahkan diisi mana yang mendekati kondisi saat itu.
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="two-columns">
-                <div class="column">
-                    <div class="section-title">Pelaksanaan Pelatihan</div>
-
-                    <div class="rating-row">
-                        <label>Tema Pelatihan</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="tema_pelatihan" value="1" required> 1</label>
-                            <label><input type="radio" name="tema_pelatihan" value="2"> 2</label>
-                            <label><input type="radio" name="tema_pelatihan" value="3"> 3</label>
-                            <label><input type="radio" name="tema_pelatihan" value="4"> 4</label>
-                            <label><input type="radio" name="tema_pelatihan" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Ketepatan Waktu</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="ketepatan_waktu" value="1" required> 1</label>
-                            <label><input type="radio" name="ketepatan_waktu" value="2"> 2</label>
-                            <label><input type="radio" name="ketepatan_waktu" value="3"> 3</label>
-                            <label><input type="radio" name="ketepatan_waktu" value="4"> 4</label>
-                            <label><input type="radio" name="ketepatan_waktu" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Suasana</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="suasana" value="1" required> 1</label>
-                            <label><input type="radio" name="suasana" value="2"> 2</label>
-                            <label><input type="radio" name="suasana" value="3"> 3</label>
-                            <label><input type="radio" name="suasana" value="4"> 4</label>
-                            <label><input type="radio" name="suasana" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Kelengkapan Materi</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="kelengkapan_materi" value="1" required> 1</label>
-                            <label><input type="radio" name="kelengkapan_materi" value="2"> 2</label>
-                            <label><input type="radio" name="kelengkapan_materi" value="3"> 3</label>
-                            <label><input type="radio" name="kelengkapan_materi" value="4"> 4</label>
-                            <label><input type="radio" name="kelengkapan_materi" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Servis / Sikap Penyelenggara</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="servis_penyelenggara" value="1" required> 1</label>
-                            <label><input type="radio" name="servis_penyelenggara" value="2"> 2</label>
-                            <label><input type="radio" name="servis_penyelenggara" value="3"> 3</label>
-                            <label><input type="radio" name="servis_penyelenggara" value="4"> 4</label>
-                            <label><input type="radio" name="servis_penyelenggara" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Alat Bantu</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="alat_bantu_pelaksanaan" value="1" required> 1</label>
-                            <label><input type="radio" name="alat_bantu_pelaksanaan" value="2"> 2</label>
-                            <label><input type="radio" name="alat_bantu_pelaksanaan" value="3"> 3</label>
-                            <label><input type="radio" name="alat_bantu_pelaksanaan" value="4"> 4</label>
-                            <label><input type="radio" name="alat_bantu_pelaksanaan" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Nilai Keseluruhan</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="nilai_keseluruhan_pelaksanaan" value="1" required>
-                                1</label>
-                            <label><input type="radio" name="nilai_keseluruhan_pelaksanaan" value="2"> 2</label>
-                            <label><input type="radio" name="nilai_keseluruhan_pelaksanaan" value="3"> 3</label>
-                            <label><input type="radio" name="nilai_keseluruhan_pelaksanaan" value="4"> 4</label>
-                            <label><input type="radio" name="nilai_keseluruhan_pelaksanaan" value="5"> 5</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="column">
-                    <div class="section-title">Pembicara</div>
-
-                    <div class="rating-row">
-                        <label>Penguasaan Masalah</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="penguasaan_masalah_pembicara" value="1" required> 1</label>
-                            <label><input type="radio" name="penguasaan_masalah_pembicara" value="2"> 2</label>
-                            <label><input type="radio" name="penguasaan_masalah_pembicara" value="3"> 3</label>
-                            <label><input type="radio" name="penguasaan_masalah_pembicara" value="4"> 4</label>
-                            <label><input type="radio" name="penguasaan_masalah_pembicara" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Cara Penyajian</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="cara_penyajian_pembicara" value="1" required> 1</label>
-                            <label><input type="radio" name="cara_penyajian_pembicara" value="2"> 2</label>
-                            <label><input type="radio" name="cara_penyajian_pembicara" value="3"> 3</label>
-                            <label><input type="radio" name="cara_penyajian_pembicara" value="4"> 4</label>
-                            <label><input type="radio" name="cara_penyajian_pembicara" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Manfaat Materi</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="manfaat_materi" value="1" required> 1</label>
-                            <label><input type="radio" name="manfaat_materi" value="2"> 2</label>
-                            <label><input type="radio" name="manfaat_materi" value="3"> 3</label>
-                            <label><input type="radio" name="manfaat_materi" value="4"> 4</label>
-                            <label><input type="radio" name="manfaat_materi" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Interaksi dengan Peserta</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="interaksi_peserta_pembicara" value="1" required> 1</label>
-                            <label><input type="radio" name="interaksi_peserta_pembicara" value="2"> 2</label>
-                            <label><input type="radio" name="interaksi_peserta_pembicara" value="3"> 3</label>
-                            <label><input type="radio" name="interaksi_peserta_pembicara" value="4"> 4</label>
-                            <label><input type="radio" name="interaksi_peserta_pembicara" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Penggunaan Alat Bantu</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="alat_bantu_pembicara" value="1" required> 1</label>
-                            <label><input type="radio" name="alat_bantu_pembicara" value="2"> 2</label>
-                            <label><input type="radio" name="alat_bantu_pembicara" value="3"> 3</label>
-                            <label><input type="radio" name="alat_bantu_pembicara" value="4"> 4</label>
-                            <label><input type="radio" name="alat_bantu_pembicara" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Nilai Keseluruhan</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="nilai_keseluruhan_pembicara" value="1" required> 1</label>
-                            <label><input type="radio" name="nilai_keseluruhan_pembicara" value="2"> 2</label>
-                            <label><input type="radio" name="nilai_keseluruhan_pembicara" value="3"> 3</label>
-                            <label><input type="radio" name="nilai_keseluruhan_pembicara" value="4"> 4</label>
-                            <label><input type="radio" name="nilai_keseluruhan_pembicara" value="5"> 5</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="two-columns">
-                <div class="column">
-                    <div class="section-title">Narasumber</div>
-
-                    <div class="rating-row">
-                        <label>Penguasaan Masalah</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="penguasaan_masalah_narasumber" value="1" required>
-                                1</label>
-                            <label><input type="radio" name="penguasaan_masalah_narasumber" value="2"> 2</label>
-                            <label><input type="radio" name="penguasaan_masalah_narasumber" value="3"> 3</label>
-                            <label><input type="radio" name="penguasaan_masalah_narasumber" value="4"> 4</label>
-                            <label><input type="radio" name="penguasaan_masalah_narasumber" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Cara Penyajian</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="cara_penyajian_narasumber" value="1" required> 1</label>
-                            <label><input type="radio" name="cara_penyajian_narasumber" value="2"> 2</label>
-                            <label><input type="radio" name="cara_penyajian_narasumber" value="3"> 3</label>
-                            <label><input type="radio" name="cara_penyajian_narasumber" value="4"> 4</label>
-                            <label><input type="radio" name="cara_penyajian_narasumber" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Manfaat Materi</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="manfaat_materi_narasumber" value="1" required> 1</label>
-                            <label><input type="radio" name="manfaat_materi_narasumber" value="2"> 2</label>
-                            <label><input type="radio" name="manfaat_materi_narasumber" value="3"> 3</label>
-                            <label><input type="radio" name="manfaat_materi_narasumber" value="4"> 4</label>
-                            <label><input type="radio" name="manfaat_materi_narasumber" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Interaksi dengan Peserta</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="interaksi_peserta_narasumber" value="1" required> 1</label>
-                            <label><input type="radio" name="interaksi_peserta_narasumber" value="2"> 2</label>
-                            <label><input type="radio" name="interaksi_peserta_narasumber" value="3"> 3</label>
-                            <label><input type="radio" name="interaksi_peserta_narasumber" value="4"> 4</label>
-                            <label><input type="radio" name="interaksi_peserta_narasumber" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Penggunaan Alat Bantu</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="alat_bantu_narasumber" value="1" required> 1</label>
-                            <label><input type="radio" name="alat_bantu_narasumber" value="2"> 2</label>
-                            <label><input type="radio" name="alat_bantu_narasumber" value="3"> 3</label>
-                            <label><input type="radio" name="alat_bantu_narasumber" value="4"> 4</label>
-                            <label><input type="radio" name="alat_bantu_narasumber" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Nilai Komentar & Saran</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="nilai_komentar_saran" value="1" required> 1</label>
-                            <label><input type="radio" name="nilai_komentar_saran" value="2"> 2</label>
-                            <label><input type="radio" name="nilai_komentar_saran" value="3"> 3</label>
-                            <label><input type="radio" name="nilai_komentar_saran" value="4"> 4</label>
-                            <label><input type="radio" name="nilai_komentar_saran" value="5"> 5</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="column">
-                    <div class="section-title">Lain-Lain</div>
-
-                    <div class="rating-row">
-                        <label>Makanan</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="makanan" value="1" required> 1</label>
-                            <label><input type="radio" name="makanan" value="2"> 2</label>
-                            <label><input type="radio" name="makanan" value="3"> 3</label>
-                            <label><input type="radio" name="makanan" value="4"> 4</label>
-                            <label><input type="radio" name="makanan" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Sound System</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="sound_system" value="1" required> 1</label>
-                            <label><input type="radio" name="sound_system" value="2"> 2</label>
-                            <label><input type="radio" name="sound_system" value="3"> 3</label>
-                            <label><input type="radio" name="sound_system" value="4"> 4</label>
-                            <label><input type="radio" name="sound_system" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="rating-row">
-                        <label>Layanan Hotel</label>
-                        <div class="rating-options">
-                            <label><input type="radio" name="layanan_hotel" value="1" required> 1</label>
-                            <label><input type="radio" name="layanan_hotel" value="2"> 2</label>
-                            <label><input type="radio" name="layanan_hotel" value="3"> 3</label>
-                            <label><input type="radio" name="layanan_hotel" value="4"> 4</label>
-                            <label><input type="radio" name="layanan_hotel" value="5"> 5</label>
-                        </div>
-                    </div>
-
-                    <div class="form-group" style="margin-top: 30px;">
-                        <label>Rencana Tindakan Penerapan:</label>
-                        <textarea name="rencana_tindakan" rows="4" class="essay"></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Komentar Tambahan:</label>
-                <textarea name="komentar_tambahan" rows="5" class="essay"></textarea>
-            </div>
-
-            <div class="signature-section">
-                <p style="text-align: right;">
-                    Surabaya,
-                    <input type="text" name="tanggalSurat" required class="text-like"
-                        placeholder="Tanggal Surat Dibuat">
-                </p>
-
-                <div class="ttd-wrapper">
-
-                    <!-- KIRI -->
-                    <div class="ttd-box">
-                        <p><strong>Mengetahui,</strong></p>
-
-                        <p class="ttd-title">
-                            KEPALA SUB BAGIAN<br>
-                            TATA USAHA
-                        </p>
-
-                        <div class="ttd-space"></div>
-
-                        <input type="text" name="kepala" class="line-input" placeholder="Nama Lengkap" required>
-
-                        <div class="nip-row">
-                            <span>NIP.</span>
-                            <input type="text" name="nipKepala" required class="essay">
-                        </div>
-                    </div>
-
-                    <!-- KANAN -->
-                    <div class="ttd-box">
-                        <p><strong>Menyetujui,</strong></p>
-
-                        <p class="ttd-title">
-                            KETUA TEAM
-                        </p>
-
-                        <div class="ttd-space"></div>
-
-                        <input type="text" name="ketua" class="line-input" placeholder="Nama Lengkap" required>
-
-                        <div class="nip-row">
-                            <span>NIP.</span>
-                            <input type="text" name="nipKetua" required class="essay">
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="submit-section">
-                    <button type="submit">Kirim Evaluasi</button>
-                </div>
+        <!-- Search Box -->
+        <form method="GET" class="search-box">
+            <input type="text" name="search" placeholder="🔍 Cari berdasarkan judul pelatihan atau nama..."
+                value="<?= htmlspecialchars($search) ?>">
+            <button type="submit" class="btn btn-primary">Cari</button>
+            <?php if ($search != ''): ?>
+                <a href="index.php" class="btn" style="background-color: #f44336;">Reset</a>
+            <?php endif; ?>
         </form>
+
+        <?php if (pg_num_rows($result) > 0): ?>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">No</th>
+                            <th>Judul Pelatihan</th>
+                            <th>Nama</th>
+                            <th>Waktu</th>
+                            <th style="text-align: center;">Sertifikat</th>
+                            <th style="text-align: center;">Rata-rata</th>
+                            <th>Tanggal Input</th>
+                            <th style="text-align: center; width: 180px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $no = $offset + 1;
+                        while ($row = pg_fetch_assoc($result)):
+                            // Hitung rata-rata nilai dari semua aspek
+                            $total_nilai = $row['tema_pelatihan'] + $row['ketepatan_waktu'] +
+                                $row['suasana'] + $row['kelengkapan_materi'] +
+                                $row['servis_penyelenggara'] + $row['alat_bantu_pelaksanaan'] +
+                                $row['penguasaan_masalah_pembicara'] + $row['cara_penyajian_pembicara'] +
+                                $row['manfaat_materi'] + $row['interaksi_peserta_pembicara'] +
+                                $row['penguasaan_masalah_narasumber'] + $row['cara_penyajian_narasumber'] +
+                                $row['makanan'] + $row['sound_system'] + $row['layanan_hotel'];
+                            $rata_rata = round($total_nilai / 15, 1);
+                        ?>
+                            <tr>
+                                <td style="font-weight: bold; color: #667eea;"><?= $no++ ?></td>
+                                <td>
+                                    <strong><?= htmlspecialchars($row['judul_pelatihan']) ?></strong>
+                                </td>
+                                <td><?= htmlspecialchars($row['nama']) ?></td>
+                                <td><?= htmlspecialchars($row['waktu']) ?></td>
+                                <td style="text-align: center;">
+                                    <?php if ($row['sertifikasi']): ?>
+                                        <a href="uploads/<?= htmlspecialchars($row['sertifikasi']) ?>" target="_blank"
+                                            class="file-link" title="Lihat Sertifikat">
+                                            📄 Lihat
+                                        </a>
+                                    <?php else: ?>
+                                        <span style="color: #999;">-</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="badge badge-<?= floor($rata_rata) ?>">
+                                        ⭐ <?= $rata_rata ?> / 5.0
+                                    </span>
+                                </td>
+                                <td>
+                                    <?= date('d/m/Y', strtotime($row['created_at'])) ?><br>
+                                    <small style="color: #999;"><?= date('H:i', strtotime($row['created_at'])) ?> WIB</small>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="detail.php?id=<?= $row['id'] ?>" class="action-btn btn-detail">📋 Detail</a>
+                                    <a href="delete.php?id=<?= $row['id'] ?>" class="action-btn btn-delete"
+                                        onclick="return confirm('Yakin ingin menghapus data evaluasi dari <?= htmlspecialchars($row['nama']) ?>?')">🗑️
+                                        Hapus</a>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <?php if ($total_pages > 1): ?>
+                <div class="pagination">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=1<?= $search ? '&search=' . urlencode($search) : '' ?>">« Pertama</a>
+                        <a href="?page=<?= $page - 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?>">‹ Sebelumnya</a>
+                    <?php else: ?>
+                        <span class="disabled">« Pertama</span>
+                        <span class="disabled">‹ Sebelumnya</span>
+                    <?php endif; ?>
+
+                    <?php
+                    // Show page numbers
+                    $start = max(1, $page - 2);
+                    $end = min($total_pages, $page + 2);
+
+                    for ($i = $start; $i <= $end; $i++):
+                    ?>
+                        <?php if ($i == $page): ?>
+                            <span class="active"><?= $i ?></span>
+                        <?php else: ?>
+                            <a href="?page=<?= $i ?><?= $search ? '&search=' . urlencode($search) : '' ?>"><?= $i ?></a>
+                        <?php endif; ?>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $total_pages): ?>
+                        <a href="?page=<?= $page + 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?>">Berikutnya ›</a>
+                        <a href="?page=<?= $total_pages ?><?= $search ? '&search=' . urlencode($search) : '' ?>">Terakhir »</a>
+                    <?php else: ?>
+                        <span class="disabled">Berikutnya ›</span>
+                        <span class="disabled">Terakhir »</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+        <?php else: ?>
+            <div class="no-data">
+                <div class="no-data-icon">📝</div>
+                <h2>Belum Ada Data Evaluasi</h2>
+                <?php if ($search != ''): ?>
+                    <p>Tidak ditemukan hasil untuk pencarian "<?= htmlspecialchars($search) ?>"</p>
+                    <a href="index.php" class="btn" style="margin-top: 20px;">Lihat Semua Data</a>
+                <?php else: ?>
+                    <p>Mulai dengan mengisi form evaluasi pelatihan.</p>
+                    <a href="form.php" class="btn" style="margin-top: 20px;">Isi Form Evaluasi</a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Modal Konfirmasi Delete All -->
+    <div id="deleteAllModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size: 48px;">⚠️</span>
+                <h2>Konfirmasi Hapus Semua Data</h2>
+            </div>
+            <div class="modal-body">
+                <p><strong>PERHATIAN!</strong> Anda akan menghapus <strong>SEMUA DATA EVALUASI (<?= $total_records ?> data)</strong> secara permanen.</p>
+                <p>Tindakan ini <strong>TIDAK DAPAT DIBATALKAN</strong> dan akan menghapus:</p>
+                <ul style="margin: 15px 0; padding-left: 20px;">
+                    <li>Semua data evaluasi dari database</li>
+                    <li>Semua file sertifikat yang telah diupload</li>
+                </ul>
+                <p style="color: #f44336; font-weight: bold;">Apakah Anda yakin ingin melanjutkan?</p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeDeleteAllModal()" class="btn close-btn">Batal</button>
+                <a href="?delete_all=confirm" class="btn btn-danger">Ya, Hapus Semua Data</a>
+            </div>
+        </div>
     </div>
 
     <script>
-        function displayFileName(input) {
-            const fileNameDisplay = document.getElementById('fileNameDisplay');
-            const imagePreview = document.getElementById('imagePreview');
+        function openDeleteAllModal() {
+            document.getElementById('deleteAllModal').style.display = 'block';
+        }
 
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const fileName = file.name;
-                const fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
+        function closeDeleteAllModal() {
+            document.getElementById('deleteAllModal').style.display = 'none';
+        }
 
-                // Validasi ukuran file (maksimal 5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('Ukuran file terlalu besar! Maksimal 5MB');
-                    input.value = '';
-                    fileNameDisplay.innerHTML = '';
-                    imagePreview.innerHTML = '';
-                    return;
-                }
-
-                // Tampilkan nama file
-                fileNameDisplay.innerHTML = `<div class="file-name">✓ ${fileName} (${fileSize} MB)</div>`;
-
-                // Preview untuk gambar
-                if (file.type.match('image.*')) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imagePreview.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
-                    };
-                    reader.readAsDataURL(file);
-                } else if (file.type === 'application/pdf') {
-                    imagePreview.innerHTML = '<div style="margin-top: 10px; color: #666;">📄 File PDF siap diupload</div>';
-                }
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            var modal = document.getElementById('deleteAllModal');
+            if (event.target == modal) {
+                closeDeleteAllModal();
             }
         }
     </script>
