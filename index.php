@@ -27,7 +27,7 @@ if (isset($_GET['delete_all']) && $_GET['delete_all'] == 'confirm') {
 }
 
 // Pagination
-$limit = 10; // Jumlah data per halaman
+$limit = 5; // Jumlah data per halaman
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
