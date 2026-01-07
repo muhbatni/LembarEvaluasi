@@ -679,7 +679,7 @@
 
             <div class="signature-section">
                 <p style="text-align: right;">
-                    Surabaya,
+                    Sidoarjo,
                     <input type="text" name="tanggalSurat" required class="text-like"
                         placeholder="Tanggal Surat Dibuat">
                 </p>
