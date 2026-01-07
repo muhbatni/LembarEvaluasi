@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h1>Berhasil!</h1>
                 <p>Data evaluasi pelatihan telah berhasil disimpan ke database.</p>
                 <a href='form.php' class='btn'>Isi Form Lagi</a>
-                <a href='lihat_data.php' class='btn btn-secondary'>Lihat Data</a>
+                <a href='index.php' class='btn btn-secondary'>Lihat Data</a>
             </div>
         </body>
         </html>";
