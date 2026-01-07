@@ -1,10 +1,10 @@
 <?php
 // postgreSQL connection parameters
 $host = "localhost";
-$port = "5433";
+$port = "5432";
 $dbname = "evaluasi_pelatihan";
 $user = "postgres";
-$password = "cantikitu5";
+$password = "123";
 
 $conn = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$password");
 
