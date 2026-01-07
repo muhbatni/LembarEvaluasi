@@ -654,7 +654,7 @@ function getNilaiText($nilai)
         <div class="section-title">Tanda Tangan</div>
         <div class="signature-section">
             <div style="text-align: right; margin-bottom: 20px;">
-                <strong>Surabaya, <?= htmlspecialchars($data['tanggal_surat']) ?></strong>
+                <strong>Sidoarjo, <?= htmlspecialchars($data['tanggal_surat']) ?></strong>
             </div>
 
             <div class="signature-grid">
