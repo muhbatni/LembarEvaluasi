@@ -466,6 +466,54 @@
                 padding: 6px;
             }
         }
+
+        /* Alert JS Required Column */
+        .alert-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .4);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-box {
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            animation: scaleIn .2s ease;
+        }
+
+        .alert-box h3 {
+            margin-top: 0;
+            color: #c599b6;
+        }
+
+        .alert-box button {
+            margin-top: 15px;
+            padding: 8px 18px;
+            background: #c599b6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -475,7 +523,7 @@
             <h1>Lembar Evaluasi Pelatihan</h1>
         </div>
 
-        <form action="proses.php" method="POST" enctype="multipart/form-data">
+        <form action="proses.php" method="POST" enctype="multipart/form-data" novalidate>
             <div class="form-group">
                 <label>Judul Pelatihan / Workshop:</label>
                 <input type="text" name="judul_pelatihan" required class="essay">
@@ -530,7 +578,7 @@
                     <div class="upload-icon">📄</div>
                     <label for="sertifikasi" class="upload-label">Pilih File</label>
                     <input type="file" id="sertifikasi" name="sertifikasi" accept=".jpg,.jpeg,.png,.pdf"
-                        onchange="displayFileName(this)">
+                        onchange="displayFileName(this)" required>
                     <div class="file-info">Format yang didukung: JPG, PNG, PDF (Max: 5MB)</div>
                     <div id="fileNameDisplay"></div>
                     <div id="imagePreview"></div>
@@ -874,6 +922,15 @@
         </form>
     </div>
 
+    <!-- Alert JS  Required Column -->
+    <div id="alertModal" class="alert-modal">
+        <div class="alert-box">
+            <h3>⚠️ Peringatan</h3>
+            <div id="alertMessage"></div>
+            <button type="button" onclick="closeAlert()">OK</button>
+        </div>
+    </div>
+
     <script>
         function displayFileName(input) {
             const fileNameDisplay = document.getElementById('fileNameDisplay');
@@ -886,7 +943,7 @@
 
                 // Validasi ukuran file (maksimal 5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('Ukuran file terlalu besar! Maksimal 5MB');
+                    alert('Ukuran file terlalu besar!<br>Maksimal <b>5MB</b>.');
                     input.value = '';
                     fileNameDisplay.innerHTML = '';
                     imagePreview.innerHTML = '';
@@ -909,6 +966,63 @@
             }
         }
     </script>
+    
+    <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            let emptyFields = [];
+
+            // Ambil semua input & textarea yang required
+            const requiredFields = this.querySelectorAll('[required]');
+
+            requiredFields.forEach(field => {
+                // Untuk radio button
+                if (field.type === 'radio') {
+                    const group = this.querySelectorAll(`input[name="${field.name}"]`);
+                    const checked = Array.from(group).some(radio => radio.checked);
+
+                    if (!checked) {
+                        // Ambil label terdekat
+                        const labelText = field.closest('.rating-row')?.querySelector('label')?.innerText;
+                        if (labelText && !emptyFields.includes(labelText)) {
+                            emptyFields.push(labelText);
+                        }
+                    }
+                }
+                // Untuk input text & textarea
+                else if (field.value.trim() === '') {
+                    const label = field.closest('.form-group')?.querySelector('label')
+                        || field.closest('.nip-row')?.querySelector('span');
+
+                    const labelText = label ? label.innerText.replace(':', '') : field.name;
+                    emptyFields.push(labelText);
+                }
+            });
+
+            if (emptyFields.length > 0) {
+                e.preventDefault();
+
+                showAlert(`
+                    <b>Semua kolom harus terisi!</b><br><br>
+                    Kolom yang belum diisi:
+                    <ul style="text-align:left; margin-top:10px">
+                        ${emptyFields.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                `);
+            }
+        });
+    </script>
+    <!-- Show Alert JS -->
+    <script>
+        function showAlert(message) {
+            document.getElementById('alertMessage').innerHTML = message;
+            document.getElementById('alertModal').style.display = 'flex';
+        }
+
+        function closeAlert() {
+            document.getElementById('alertModal').style.display = 'none';
+        }
+    </script>
+
 </body>
 
 </html>
