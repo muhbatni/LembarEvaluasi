@@ -323,6 +323,149 @@
             font-size: inherit;
             font-weight: inherit;
         }
+
+        /* COMPACT & RESPONSIVE FORM */
+
+        /* Tablet */
+        @media (max-width: 1024px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .rating-row {
+                padding: 8px;
+            }
+
+            .rating-options {
+                gap: 10px;
+            }
+
+            textarea {
+                min-height: 80px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+                border-radius: 6px;
+            }
+
+            .header h1 {
+                font-size: 16px;
+                line-height: 1.4;
+            }
+
+            /* Info box jadi vertikal */
+            .info-box {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .info-box .left,
+            .info-box .right {
+                width: 100%;
+            }
+
+            /* Dua kolom jadi satu */
+            .two-columns {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .section-title {
+                font-size: 14px;
+                margin-top: 10px;
+            }
+
+            /* Rating lebih rapat */
+            .rating-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 8px;
+            }
+
+            .rating-options {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .rating-options label {
+                font-size: 13px;
+            }
+
+            /* Upload box lebih ringkas */
+            .upload-box {
+                padding: 15px;
+            }
+
+            .upload-icon {
+                font-size: 36px;
+            }
+
+            /* TTD jadi vertikal */
+            .ttd-wrapper {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .ttd-box {
+                width: 100%;
+            }
+
+            .signature-section p {
+                text-align: left;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px;
+                font-size: 15px;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 15px;
+            }
+
+            label {
+                font-size: 13px;
+            }
+
+            .rating-options label {
+                font-size: 12px;
+            }
+
+            textarea {
+                font-size: 13px;
+            }
+
+            input[type="text"] {
+                font-size: 13px;
+            }
+
+            .legend td {
+                font-size: 12px;
+                padding: 6px;
+            }
+        }
     </style>
 </head>
 

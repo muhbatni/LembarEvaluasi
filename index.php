@@ -6,18 +6,18 @@ if (isset($_GET['delete_all']) && $_GET['delete_all'] == 'confirm') {
     // Hapus semua file sertifikasi
     $query_files = "SELECT sertifikasi FROM evaluasi WHERE sertifikasi IS NOT NULL";
     $result_files = pg_query($conn, $query_files);
-    
+
     while ($file = pg_fetch_assoc($result_files)) {
         $file_path = 'uploads/' . $file['sertifikasi'];
         if (file_exists($file_path)) {
             unlink($file_path);
         }
     }
-    
+
     // Hapus semua data dari database
     $delete_all_query = "DELETE FROM evaluasi";
     $result_delete = pg_query($conn, $delete_all_query);
-    
+
     if ($result_delete) {
         header('Location: index.php?deleted_all=success');
     } else {
@@ -28,7 +28,7 @@ if (isset($_GET['delete_all']) && $_GET['delete_all'] == 'confirm') {
 
 // Pagination
 $limit = 10; // Jumlah data per halaman
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Search functionality
@@ -168,12 +168,12 @@ $result = pg_query($conn, $query);
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #be7ea9ff 0%, #bd54a4ff 100%);
             color: white;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(111, 57, 57, 0.1);
         }
 
         .stat-card h3 {
@@ -489,6 +489,107 @@ $result = pg_query($conn, $query);
                 width: 95%;
             }
         }
+
+        /* Compact style */
+
+        /* Tab */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            th,
+            td {
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+                border-radius: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th {
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+            td {
+                font-size: 12px;
+            }
+
+            /* Table scroll on mobile */
+            .table-container {
+                overflow-x: auto;
+            }
+
+            /* Button aksi jadi vertikal */
+            .action-btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 6px;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 18px;
+            }
+
+            .stat-card h3 {
+                font-size: 26px;
+            }
+
+            .stat-card p {
+                font-size: 12px;
+            }
+
+            .pagination a,
+            .pagination span {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 
@@ -582,7 +683,7 @@ $result = pg_query($conn, $query);
                                 $row['penguasaan_masalah_narasumber'] + $row['cara_penyajian_narasumber'] +
                                 $row['makanan'] + $row['sound_system'] + $row['layanan_hotel'];
                             $rata_rata = round($total_nilai / 15, 1);
-                        ?>
+                            ?>
                             <tr>
                                 <td style="font-weight: bold; color: #667eea;"><?= $no++ ?></td>
                                 <td>
@@ -638,7 +739,7 @@ $result = pg_query($conn, $query);
                     $end = min($total_pages, $page + 2);
 
                     for ($i = $start; $i <= $end; $i++):
-                    ?>
+                        ?>
                         <?php if ($i == $page): ?>
                             <span class="active"><?= $i ?></span>
                         <?php else: ?>
@@ -679,7 +780,8 @@ $result = pg_query($conn, $query);
                 <h2>Konfirmasi Hapus Semua Data</h2>
             </div>
             <div class="modal-body">
-                <p><strong>PERHATIAN!</strong> Anda akan menghapus <strong>SEMUA DATA EVALUASI (<?= $total_records ?> data)</strong> secara permanen.</p>
+                <p><strong>PERHATIAN!</strong> Anda akan menghapus <strong>SEMUA DATA EVALUASI (<?= $total_records ?>
+                        data)</strong> secara permanen.</p>
                 <p>Tindakan ini <strong>TIDAK DAPAT DIBATALKAN</strong> dan akan menghapus:</p>
                 <ul style="margin: 15px 0; padding-left: 20px;">
                     <li>Semua data evaluasi dari database</li>
@@ -704,7 +806,7 @@ $result = pg_query($conn, $query);
         }
 
         // Close modal when clicking outside
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             var modal = document.getElementById('deleteAllModal');
             if (event.target == modal) {
                 closeDeleteAllModal();
