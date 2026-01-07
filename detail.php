@@ -6,7 +6,7 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$id = (int)$_GET['id'];
+$id = (int) $_GET['id'];
 $query = "SELECT * FROM evaluasi WHERE id = $id";
 $result = pg_query($conn, $query);
 
@@ -17,7 +17,8 @@ if (pg_num_rows($result) == 0) {
 
 $data = pg_fetch_assoc($result);
 
-function getNilaiText($nilai) {
+function getNilaiText($nilai)
+{
     $labels = [
         1 => 'Buruk',
         2 => 'Kurang',
@@ -31,6 +32,7 @@ function getNilaiText($nilai) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,14 +44,16 @@ function getNilaiText($nilai) {
             padding: 20px;
             background-color: #f5f5f5;
         }
+
         .container {
             max-width: 900px;
             margin: 0 auto;
             background: white;
             padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             color: #333;
             margin-bottom: 10px;
@@ -57,25 +61,30 @@ function getNilaiText($nilai) {
             border-bottom: 3px solid #4CAF50;
             padding-bottom: 15px;
         }
+
         .info-box {
             background: #f9f9f9;
             padding: 20px;
             border-radius: 5px;
             margin: 20px 0;
         }
+
         .info-row {
             display: flex;
             margin-bottom: 10px;
         }
+
         .info-label {
             font-weight: bold;
             width: 200px;
             color: #555;
         }
+
         .info-value {
             flex: 1;
             color: #333;
         }
+
         .section-title {
             font-size: 18px;
             font-weight: bold;
@@ -85,27 +94,32 @@ function getNilaiText($nilai) {
             padding-bottom: 10px;
             border-bottom: 2px solid #4CAF50;
         }
+
         .rating-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-bottom: 20px;
         }
+
         .rating-item {
             background: #f9f9f9;
             padding: 15px;
             border-radius: 5px;
             border-left: 4px solid #4CAF50;
         }
+
         .rating-label {
             font-weight: bold;
             color: #555;
             margin-bottom: 5px;
         }
+
         .rating-value {
             font-size: 24px;
             font-weight: bold;
         }
+
         .badge {
             display: inline-block;
             padding: 5px 12px;
@@ -114,11 +128,32 @@ function getNilaiText($nilai) {
             font-weight: bold;
             margin-left: 10px;
         }
-        .badge-1 { background-color: #f44336; color: white; }
-        .badge-2 { background-color: #ff9800; color: white; }
-        .badge-3 { background-color: #ffc107; color: black; }
-        .badge-4 { background-color: #8bc34a; color: white; }
-        .badge-5 { background-color: #4caf50; color: white; }
+
+        .badge-1 {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .badge-2 {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .badge-3 {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .badge-4 {
+            background-color: #8bc34a;
+            color: white;
+        }
+
+        .badge-5 {
+            background-color: #4caf50;
+            color: white;
+        }
+
         .text-content {
             background: #f9f9f9;
             padding: 15px;
@@ -127,6 +162,7 @@ function getNilaiText($nilai) {
             margin: 10px 0;
             white-space: pre-wrap;
         }
+
         .btn {
             display: inline-block;
             padding: 10px 20px;
@@ -135,26 +171,32 @@ function getNilaiText($nilai) {
             border-radius: 5px;
             transition: background-color 0.3s;
         }
+
         .btn-back {
             background-color: #2196F3;
             color: white;
         }
+
         .btn-back:hover {
             background-color: #0b7dda;
         }
+
         .btn-print {
             background-color: #4CAF50;
             color: white;
         }
+
         .btn-print:hover {
             background-color: #45a049;
         }
+
         .actions {
             text-align: center;
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #ddd;
         }
+
         .certificate-box {
             margin: 20px 0;
             padding: 20px;
@@ -162,6 +204,7 @@ function getNilaiText($nilai) {
             border-radius: 5px;
             text-align: center;
         }
+
         .certificate-img {
             max-width: 100%;
             height: auto;
@@ -169,18 +212,21 @@ function getNilaiText($nilai) {
             border-radius: 5px;
             margin-top: 10px;
         }
+
         .signature-section {
             margin-top: 40px;
             padding: 20px;
             background: #f9f9f9;
             border-radius: 5px;
         }
+
         .signature-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-top: 20px;
         }
+
         .signature-box {
             text-align: center;
             padding: 20px;
@@ -188,15 +234,18 @@ function getNilaiText($nilai) {
             border-radius: 5px;
             border: 1px solid #ddd;
         }
+
         .signature-title {
             font-weight: bold;
             margin-bottom: 10px;
             font-size: 14px;
         }
+
         .signature-space {
             height: 80px;
             margin: 20px 0;
         }
+
         .signature-name {
             font-weight: bold;
             font-size: 16px;
@@ -204,16 +253,139 @@ function getNilaiText($nilai) {
             padding-top: 10px;
             margin-top: 10px;
         }
+
         .signature-nip {
             font-size: 14px;
             color: #666;
             margin-top: 5px;
         }
+
         @media print {
-            .actions, .btn { display: none; }
+
+            .actions,
+            .btn {
+                display: none;
+            }
+        }
+
+        /* RESPONSIVE DETAIL PAGE */
+
+        /* Tablet */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .rating-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-label {
+                width: 160px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                border-radius: 6px;
+            }
+
+            h1 {
+                font-size: 18px;
+                padding-bottom: 10px;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 4px;
+                margin-bottom: 12px;
+            }
+
+            .info-label {
+                width: auto;
+                font-size: 13px;
+            }
+
+            .info-value {
+                font-size: 14px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .rating-item {
+                padding: 12px;
+            }
+
+            .rating-value {
+                font-size: 20px;
+            }
+
+            .badge {
+                display: inline-block;
+                margin-top: 6px;
+            }
+
+            /* Sertifikat */
+            .certificate-box {
+                padding: 15px;
+            }
+
+            /* Tanda tangan jadi vertikal */
+            .signature-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .signature-box {
+                padding: 15px;
+            }
+
+            .actions {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 16px;
+            }
+
+            .rating-label {
+                font-size: 13px;
+            }
+
+            .rating-value {
+                font-size: 18px;
+            }
+
+            .badge {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Detail Evaluasi Pelatihan</h1>
@@ -238,21 +410,20 @@ function getNilaiText($nilai) {
         </div>
 
         <?php if ($data['sertifikasi']): ?>
-        <div class="certificate-box">
-            <h3>📄 Sertifikat</h3>
-            <?php 
-            $ext = strtolower(pathinfo($data['sertifikasi'], PATHINFO_EXTENSION));
-            if (in_array($ext, ['jpg', 'jpeg', 'png'])): 
-            ?>
-                <img src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" 
-                     alt="Sertifikasi" class="certificate-img">
-            <?php else: ?>
-                <p>
-                    <a href="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" 
-                       target="_blank" class="btn btn-back">📄 Lihat PDF</a>
-                </p>
-            <?php endif; ?>
-        </div>
+            <div class="certificate-box">
+                <h3>📄 Sertifikat</h3>
+                <?php
+                $ext = strtolower(pathinfo($data['sertifikasi'], PATHINFO_EXTENSION));
+                if (in_array($ext, ['jpg', 'jpeg', 'png'])):
+                    ?>
+                    <img src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" alt="Sertifikasi" class="certificate-img">
+                <?php else: ?>
+                    <p>
+                        <a href="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" target="_blank" class="btn btn-back">📄
+                            Lihat PDF</a>
+                    </p>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
 
         <div class="section-title">Pelaksanaan Pelatihan</div>
@@ -470,13 +641,13 @@ function getNilaiText($nilai) {
         </div>
 
         <?php if ($data['rencana_tindakan']): ?>
-        <div class="section-title">Rencana Tindakan Penerapan</div>
-        <div class="text-content"><?= htmlspecialchars($data['rencana_tindakan']) ?></div>
+            <div class="section-title">Rencana Tindakan Penerapan</div>
+            <div class="text-content"><?= htmlspecialchars($data['rencana_tindakan']) ?></div>
         <?php endif; ?>
 
         <?php if ($data['komentar_tambahan']): ?>
-        <div class="section-title">Komentar Tambahan</div>
-        <div class="text-content"><?= htmlspecialchars($data['komentar_tambahan']) ?></div>
+            <div class="section-title">Komentar Tambahan</div>
+            <div class="text-content"><?= htmlspecialchars($data['komentar_tambahan']) ?></div>
         <?php endif; ?>
 
         <!-- SECTION TANDA TANGAN (DITAMBAHKAN) -->
@@ -485,7 +656,7 @@ function getNilaiText($nilai) {
             <div style="text-align: right; margin-bottom: 20px;">
                 <strong>Surabaya, <?= htmlspecialchars($data['tanggal_surat']) ?></strong>
             </div>
-            
+
             <div class="signature-grid">
                 <div class="signature-box">
                     <div class="signature-title">Mengetahui,</div>
@@ -497,7 +668,7 @@ function getNilaiText($nilai) {
                     <div class="signature-name"><?= htmlspecialchars($data['nama_kepala']) ?></div>
                     <div class="signature-nip">NIP. <?= htmlspecialchars($data['nip_kepala']) ?></div>
                 </div>
-                
+
                 <div class="signature-box">
                     <div class="signature-title">Menyetujui,</div>
                     <div style="font-weight: bold; margin: 10px 0;">
@@ -516,4 +687,5 @@ function getNilaiText($nilai) {
         </div>
     </div>
 </body>
+
 </html>
