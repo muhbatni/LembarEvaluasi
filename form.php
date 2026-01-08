@@ -260,7 +260,7 @@
             height: 100%;
         }
 
-        .ttd-fill{
+        .ttd-fill {
             flex: 1;
         }
 
@@ -352,6 +352,53 @@
                 gap: 10px;
             }
         }
+
+        /* ALERT Design */
+        .modal-alert {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-alert-content {
+            background: #fff;
+            padding: 25px;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 8px;
+            text-align: center;
+            animation: scaleIn 0.25s ease;
+        }
+
+        .modal-alert-content h3 {
+            margin-top: 0;
+            color: #d32f2f;
+        }
+
+        .modal-alert-content ul {
+            padding-left: 18px;
+        }
+
+        .modal-alert-content button {
+            margin-top: 20px;
+            background: #d32f2f;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.85);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -365,7 +412,7 @@
             <h1>Lembar Evaluasi Pelatihan</h1>
         </div>
 
-        <form action="proses.php" method="POST" enctype="multipart/form-data">
+        <form action="proses.php" method="POST" enctype="multipart/form-data" novalidate>
             <div class="form-group">
                 <label>Judul Pelatihan / Workshop:</label>
                 <input type="text" name="judul_pelatihan" required class="essay">
@@ -782,7 +829,7 @@
                             PENGEMBANGAN KOMPETENSI
                         </p>
 
-                        <div class="ttd-fill"></div> 
+                        <div class="ttd-fill"></div>
 
                         <input type="text" name="pegawai" class="line-input" placeholder="Nama Lengkap" required>
 
@@ -836,6 +883,14 @@
         </form>
     </div>
 
+    <div id="alertModal" class="modal-alert">
+        <div class="modal-alert-content">
+            <h3>⚠️ Peringatan</h3>
+            <div id="alertMessage"></div>
+            <button onclick="closeAlert()">OK</button>
+        </div>
+    </div>
+
     <script>
         function displayFileName(input) {
             const fileNameDisplay = document.getElementById('fileNameDisplay');
@@ -875,31 +930,40 @@
     <script>
         document.querySelector('form').addEventListener('submit', function(e) {
             let emptyFields = [];
+            const form = this;
 
-            // Ambil semua input & textarea yang required
-            const requiredFields = this.querySelectorAll('[required]');
+            // TEXT, NUMBER, SELECT, TEXTAREA
+            form.querySelectorAll('[required]').forEach(field => {
+                if (field.type === 'radio') return;
 
-            requiredFields.forEach(field => {
-                // Untuk radio button
-                if (field.type === 'radio') {
-                    const group = this.querySelectorAll(`input[name="${field.name}"]`);
-                    const checked = Array.from(group).some(radio => radio.checked);
-
-                    if (!checked) {
-                        // Ambil label terdekat
-                        const labelText = field.closest('.rating-row')?.querySelector('label')?.innerText;
-                        if (labelText && !emptyFields.includes(labelText)) {
-                            emptyFields.push(labelText);
-                        }
-                    }
-                }
-                // Untuk input text & textarea
-                else if (field.value.trim() === '') {
-                    const label = field.closest('.form-group')?.querySelector('label') ||
+                if (!field.value || field.value.trim() === '') {
+                    const label =
+                        field.closest('.form-group')?.querySelector('label') ||
                         field.closest('.nip-row')?.querySelector('span');
 
                     const labelText = label ? label.innerText.replace(':', '') : field.name;
-                    emptyFields.push(labelText);
+                    if (!emptyFields.includes(labelText)) {
+                        emptyFields.push(labelText);
+                    }
+                }
+            });
+
+            // RADIO GROUP
+            const radioNames = [...new Set(
+                Array.from(form.querySelectorAll('input[type="radio"][required]'))
+                .map(r => r.name)
+            )];
+
+            radioNames.forEach(name => {
+                const checked = form.querySelector(`input[name="${name}"]:checked`);
+                if (!checked) {
+                    const label = form.querySelector(`input[name="${name}"]`)
+                        ?.closest('.rating-row')
+                        ?.querySelector('label');
+
+                    if (label && !emptyFields.includes(label.innerText)) {
+                        emptyFields.push(label.innerText);
+                    }
                 }
             });
 
@@ -907,15 +971,16 @@
                 e.preventDefault();
 
                 showAlert(`
-                    <b>Semua kolom harus terisi!</b><br><br>
-                    Kolom yang belum diisi:
-                    <ul style="text-align:left; margin-top:10px">
-                        ${emptyFields.map(f => `<li>${f}</li>`).join('')}
-                    </ul>
-                `);
+            <b>Semua kolom wajib diisi!</b><br><br>
+            Kolom yang belum diisi:
+            <ul style="text-align:left; margin-top:10px">
+                ${emptyFields.map(f => `<li>${f}</li>`).join('')}
+            </ul>
+        `);
             }
         });
     </script>
+
     <!-- Show Alert JS -->
     <script>
         function showAlert(message) {
