@@ -255,10 +255,13 @@
         .ttd-box {
             text-align: center;
             padding: 10px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
-        .ttd-space {
-            height: 70px;
+        .ttd-fill{
+            flex: 1;
         }
 
         .line-input {
@@ -779,7 +782,7 @@
                             PENGEMBANGAN KOMPETENSI
                         </p>
 
-                        <div class="ttd-space"></div>
+                        <div class="ttd-fill"></div> 
 
                         <input type="text" name="pegawai" class="line-input" placeholder="Nama Lengkap" required>
 
@@ -797,7 +800,7 @@
                             TATA USAHA
                         </p>
 
-                        <div class="ttd-space"></div>
+                        <div class="ttd-fill"></div>
 
                         <input type="text" name="kepala" class="line-input" placeholder="Nama Lengkap" required>
 
@@ -814,7 +817,7 @@
                             KETUA TEAM
                         </p>
 
-                        <div class="ttd-space"></div>
+                        <div class="ttd-fill"></div>
 
                         <input type="text" name="ketua" class="line-input" placeholder="Nama Lengkap" required>
 
