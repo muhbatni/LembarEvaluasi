@@ -568,6 +568,16 @@ $result = pg_query($conn, $query);
             box-shadow: 0 5px 15px rgba(80, 99, 182, 0.3);
         }
 
+        .btn-logout {
+            background-color: #751f43ff;
+            color: #fff;
+        }
+
+        .btn-logout:hover {
+            background-color: #a0617bff;
+            box-shadow: 0 5px 15px rgba(80, 99, 182, 0.3);
+        }
+
         /* CSS Modal Login */
         .modern-modal {
             padding: 32px;
@@ -709,7 +719,7 @@ $result = pg_query($conn, $query);
                     <div class="header-actions">
                         <?php if (isset($_SESSION['admin'])): ?>
                             <span class="btn btn-admin">👔 <?= $_SESSION['admin'] ?></span>
-                            <a href="logout.php" class="btn">Logout</a>
+                            <a href="logout.php" class="btn btn-logout">Logout</a>
                         <?php else: ?>
                             <button onclick="openAdminModal()" class="btn btn-admin">
                                 🔐 Login as Admin
