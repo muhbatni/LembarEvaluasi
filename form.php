@@ -42,7 +42,9 @@
             font-weight: bold;
         }
 
-        .form-group input[type="text"] {
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
@@ -50,18 +52,11 @@
             box-sizing: border-box;
         }
 
-        .info-box {
-            display: flex;
-            justify-content: space-between;
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 20px;
-        }
-
-        .info-box .left {
-            width: 48%;
-        }
-
-        .info-box .right {
-            width: 48%;
         }
 
         table.legend {
@@ -142,20 +137,6 @@
 
         .signature-section {
             margin-top: 40px;
-            text-align: center;
-        }
-
-        .signature-box {
-            display: inline-block;
-            margin: 20px;
-            text-align: center;
-        }
-
-        .signature-line {
-            border-top: 1px solid #333;
-            margin-top: 60px;
-            padding-top: 5px;
-            min-width: 200px;
         }
 
         button {
@@ -178,7 +159,6 @@
             margin-top: 30px;
         }
 
-        /* Style untuk upload file */
         .upload-box {
             border: 2px dashed #4CAF50;
             border-radius: 8px;
@@ -246,12 +226,10 @@
             border: none;
             background: transparent;
             outline: none;
-
             font-family: inherit;
             font-size: inherit;
             font-weight: inherit;
             line-height: inherit;
-
             padding: 0;
             margin: 0;
             text-align: center;
@@ -262,21 +240,21 @@
             border-bottom: 1px solid #333;
             background: transparent;
             outline: none;
-
             font-family: inherit;
             font-size: inherit;
             text-align: center;
         }
 
         .ttd-wrapper {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
             margin-top: 30px;
         }
 
         .ttd-box {
-            width: 45%;
             text-align: center;
+            padding: 10px;
         }
 
         .ttd-space {
@@ -316,6 +294,7 @@
 
         .ttd-title {
             min-height: 50px;
+            font-weight: bold;
         }
 
         .essay {
@@ -324,206 +303,66 @@
             font-weight: inherit;
         }
 
-        /* COMPACT & RESPONSIVE FORM */
-
-        /* Tablet */
-        @media (max-width: 1024px) {
-            body {
-                padding: 15px;
-            }
-
-            .container {
-                padding: 20px;
-            }
-
-            .header h1 {
-                font-size: 18px;
-            }
-
-            .rating-row {
-                padding: 8px;
-            }
-
-            .rating-options {
-                gap: 10px;
-            }
-
-            textarea {
-                min-height: 80px;
-            }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-bottom: 20px;
         }
 
-        /* Mobile */
+        .back-button:hover {
+            background-color: #0b7dda;
+        }
+
+        .data-peserta-box {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+            margin-bottom: 20px;
+        }
+
+        .data-peserta-box h3 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+
         @media (max-width: 768px) {
-            body {
-                margin: 0;
-                padding: 10px;
+            .info-grid {
+                grid-template-columns: 1fr;
             }
 
-            .container {
-                padding: 15px;
-                border-radius: 6px;
-            }
-
-            .header h1 {
-                font-size: 16px;
-                line-height: 1.4;
-            }
-
-            /* Info box jadi vertikal */
-            .info-box {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .info-box .left,
-            .info-box .right {
-                width: 100%;
-            }
-
-            /* Dua kolom jadi satu */
             .two-columns {
                 flex-direction: column;
-                gap: 20px;
             }
 
-            .section-title {
-                font-size: 14px;
-                margin-top: 10px;
+            .ttd-wrapper {
+                grid-template-columns: 1fr;
             }
 
-            /* Rating lebih rapat */
             .rating-row {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 8px;
-                padding: 8px;
-            }
-
-            .rating-options {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .rating-options label {
-                font-size: 13px;
-            }
-
-            /* Upload box lebih ringkas */
-            .upload-box {
-                padding: 15px;
-            }
-
-            .upload-icon {
-                font-size: 36px;
-            }
-
-            /* TTD jadi vertikal */
-            .ttd-wrapper {
-                flex-direction: column;
-                gap: 30px;
-            }
-
-            .ttd-box {
-                width: 100%;
-            }
-
-            .signature-section p {
-                text-align: left;
-            }
-
-            button {
-                width: 100%;
-                padding: 12px;
-                font-size: 15px;
-            }
-        }
-
-        /* Small Mobile */
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 15px;
-            }
-
-            label {
-                font-size: 13px;
-            }
-
-            .rating-options label {
-                font-size: 12px;
-            }
-
-            textarea {
-                font-size: 13px;
-            }
-
-            input[type="text"] {
-                font-size: 13px;
-            }
-
-            .legend td {
-                font-size: 12px;
-                padding: 6px;
-            }
-        }
-
-        /* Alert JS Required Column */
-        .alert-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .4);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .alert-box {
-            background: #fff;
-            padding: 20px 25px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 420px;
-            text-align: center;
-            animation: scaleIn .2s ease;
-        }
-
-        .alert-box h3 {
-            margin-top: 0;
-            color: #c599b6;
-        }
-
-        .alert-box button {
-            margin-top: 15px;
-            padding: 8px 18px;
-            background: #c599b6;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        @keyframes scaleIn {
-            from {
-                transform: scale(.9);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
+                gap: 10px;
             }
         }
     </style>
 </head>
 
 <body>
+    <a href="index.php" class="back-button" style="margin-bottom:15px; display:inline-block;">
+        ← Kembali
+    </a>
+    
     <div class="container">
         <div class="header">
             <h1>Lembar Evaluasi Pelatihan</h1>
         </div>
 
-        <form action="proses.php" method="POST" enctype="multipart/form-data" novalidate>
+        <form action="proses.php" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Judul Pelatihan / Workshop:</label>
                 <input type="text" name="judul_pelatihan" required class="essay">
@@ -556,17 +395,58 @@
                 </tr>
             </table>
 
-            <div class="info-box">
-                <div class="left">
+            <div>
+                <h3> Data Peserta</h3>
+
+                <div class="info-grid">
                     <div class="form-group">
                         <label>Nama:</label>
                         <input type="text" name="nama" required class="essay">
                     </div>
-                </div>
-                <div class="right">
+
                     <div class="form-group">
-                        <label>Waktu:</label>
-                        <input type="text" name="waktu" required class="essay">
+                        <label>NIP:</label>
+                        <input type="text" name="nip" required class="essay">
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label>Jabatan:</label>
+                        <input type="text" name="jabatan" required class="essay">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Unit Kerja:</label>
+                        <input type="text" name="unit_kerja" required class="essay">
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label>Waktu / Tanggal Pelaksanaan:</label>
+                        <input type="text" name="waktu" required class="essay" placeholder="Contoh: 10-12 Januari 2025">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jam Pelajaran:</label>
+                        <input type="number" name="jam_pelajaran" required class="essay" placeholder="Contoh: 8" min="1">
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label>Jenis Pengembangan Kompetensi:</label>
+                        <select name="jenis_kompetensi" required class="essay">
+                            <option value="">-- Pilih --</option>
+                            <option value="Klasikal">Klasikal</option>
+                            <option value="Non Klasikal">Non Klasikal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Penyelenggara:</label>
+                        <input type="text" name="penyelenggara" required class="essay">
                     </div>
                 </div>
             </div>
@@ -578,7 +458,7 @@
                     <div class="upload-icon">📄</div>
                     <label for="sertifikasi" class="upload-label">Pilih File</label>
                     <input type="file" id="sertifikasi" name="sertifikasi" accept=".jpg,.jpeg,.png,.pdf"
-                        onchange="displayFileName(this)" required>
+                        onchange="displayFileName(this)">
                     <div class="file-info">Format yang didukung: JPG, PNG, PDF (Max: 5MB)</div>
                     <div id="fileNameDisplay"></div>
                     <div id="imagePreview"></div>
@@ -862,10 +742,14 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <label>Dampak Pengembangan Kompetensi Terhadap Pegawai/Instansi:</label>
+                <textarea name="dampak_kompetensi" rows="5" class="essay" required></textarea>
+            </div>
 
             <div class="form-group">
-                <label>Komentar Dan Saran:</label>
-                <textarea name="komentar_dan_saran" rows="5" class="essay"></textarea>
+                <label>Komentar dan Saran:</label>
+                <textarea name="Komentar_saran" rows="5" class="essay"></textarea>
             </div>
 
             <div class="signature-section">
@@ -877,7 +761,26 @@
 
                 <div class="ttd-wrapper">
 
-                    <!-- KIRI -->
+                    <!-- KIRI: Pegawai Yang Melaksanakan (NEW) -->
+                    <div class="ttd-box">
+                        <p><strong>Mengetahui,</strong></p>
+
+                        <p class="ttd-title">
+                            PEGAWAI YANG MELAKSANAKAN<br>
+                            PENGEMBANGAN KOMPETENSI
+                        </p>
+
+                        <div class="ttd-space"></div>
+
+                        <input type="text" name="pegawai" class="line-input" placeholder="Nama Lengkap" required>
+
+                        <div class="nip-row">
+                            <span>NIP.</span>
+                            <input type="text" name="nipPegawai" required class="essay">
+                        </div>
+                    </div>
+
+                    <!-- TENGAH -->
                     <div class="ttd-box">
                         <p><strong>Mengetahui,</strong></p>
 
@@ -919,16 +822,8 @@
                 <div class="submit-section">
                     <button type="submit">Kirim Evaluasi</button>
                 </div>
+            </div>
         </form>
-    </div>
-
-    <!-- Alert JS  Required Column -->
-    <div id="alertModal" class="alert-modal">
-        <div class="alert-box">
-            <h3>⚠️ Peringatan</h3>
-            <div id="alertMessage"></div>
-            <button type="button" onclick="closeAlert()">OK</button>
-        </div>
     </div>
 
     <script>
@@ -956,7 +851,7 @@
                 // Preview untuk gambar
                 if (file.type.match('image.*')) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
+                    reader.onload = function(e) {
                         imagePreview.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
                     };
                     reader.readAsDataURL(file);
@@ -966,9 +861,9 @@
             }
         }
     </script>
-    
+
     <script>
-        document.querySelector('form').addEventListener('submit', function (e) {
+        document.querySelector('form').addEventListener('submit', function(e) {
             let emptyFields = [];
 
             // Ambil semua input & textarea yang required
@@ -990,8 +885,8 @@
                 }
                 // Untuk input text & textarea
                 else if (field.value.trim() === '') {
-                    const label = field.closest('.form-group')?.querySelector('label')
-                        || field.closest('.nip-row')?.querySelector('span');
+                    const label = field.closest('.form-group')?.querySelector('label') ||
+                        field.closest('.nip-row')?.querySelector('span');
 
                     const labelText = label ? label.innerText.replace(':', '') : field.name;
                     emptyFields.push(labelText);
