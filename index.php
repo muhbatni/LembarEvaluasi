@@ -694,6 +694,10 @@ $result = pg_query($conn, $query);
                 opacity: 1;
             }
         }
+
+        th.custom-header {
+            background: #EA7B7B !important;
+        }
     </style>
 </head>
 
@@ -761,14 +765,14 @@ $result = pg_query($conn, $query);
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 50px;">No</th>
-                            <th>Judul Pelatihan</th>
-                            <th>Nama</th>
-                            <th>Waktu</th>
-                            <th style="text-align: center;">Sertifikat</th>
-                            <th style="text-align: center;">Rata-rata</th>
-                            <th>Tanggal Input</th>
-                            <th style="text-align: center; width: 180px;">Aksi</th>
+                            <th class="custom-header" style="width: 50px;">No</th>
+                            <th class="custom-header">Judul Pelatihan</th>
+                            <th class="custom-header">Nama</th>
+                            <th class="custom-header">Waktu</th>
+                            <th class="custom-header" style="text-align: center;">Sertifikat</th>
+                            <th class="custom-header" style="text-align: center;">Rata-rata</th>
+                            <th class="custom-header">Tanggal Input</th>
+                            <th class="custom-header" style="text-align: center; width: 180px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
