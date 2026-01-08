@@ -1,13 +1,14 @@
 <?php
+date_default_timezone_set('Asia/Jakarta'); // Set timezone to Jakarta
 include 'koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
+
     // Ambil data dari form
     $judul_pelatihan = pg_escape_string($conn, $_POST['judul_pelatihan']);
     $nama = pg_escape_string($conn, $_POST['nama']);
     $waktu = pg_escape_string($conn, $_POST['waktu']);
-    
+
     // Handle upload file sertifikasi
     $sertifikasi = null;
     if (isset($_FILES['sertifikasi']) && $_FILES['sertifikasi']['error'] == 0) {
@@ -15,34 +16,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $filename = $_FILES['sertifikasi']['name'];
         $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         $filesize = $_FILES['sertifikasi']['size'];
-        
+
         // Validasi
         if (!in_array($filetype, $allowed)) {
             die("Error: Format file tidak didukung. Hanya JPG, PNG, dan PDF yang diperbolehkan.");
         }
-        
+
         if ($filesize > 5 * 1024 * 1024) { // 5MB
             die("Error: Ukuran file terlalu besar. Maksimal 5MB.");
         }
-        
+
         // Buat folder uploads jika belum ada
         $upload_dir = 'uploads/';
         if (!file_exists($upload_dir)) {
             mkdir($upload_dir, 0777, true);
         }
-        
-        // Generate nama file unik
-        $new_filename = uniqid() . '_' . time() . '.' . $filetype;
-        $upload_path = $upload_dir . $new_filename;
-        
-        // Upload file
+
+        // Upload configuration
+        $extension = strtolower(pathinfo($_FILES['sertifikasi']['name'], PATHINFO_EXTENSION));
+
+        // timestamp jam + menit (misal 0921)
+        $time = date('Hi');
+
+        // nomor urut
+        $counter = 1;
+        do {
+            $new_filename = $time . '_' . $counter . '.' . $extension;
+            $upload_path = $upload_dir . $new_filename;
+            $counter++;
+        } while (file_exists($upload_path));
+
+        // upload file
         if (move_uploaded_file($_FILES['sertifikasi']['tmp_name'], $upload_path)) {
             $sertifikasi = $new_filename;
         } else {
             die("Error: Gagal mengupload file.");
         }
     }
-    
+
     // Pelaksanaan Pelatihan
     $tema_pelatihan = (int)$_POST['tema_pelatihan'];
     $ketepatan_waktu = (int)$_POST['ketepatan_waktu'];
@@ -51,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $servis_penyelenggara = (int)$_POST['servis_penyelenggara'];
     $alat_bantu_pelaksanaan = (int)$_POST['alat_bantu_pelaksanaan'];
     $nilai_keseluruhan_pelaksanaan = (int)$_POST['nilai_keseluruhan_pelaksanaan'];
-    
+
     // Pembicara
     $penguasaan_masalah_pembicara = (int)$_POST['penguasaan_masalah_pembicara'];
     $cara_penyajian_pembicara = (int)$_POST['cara_penyajian_pembicara'];
@@ -59,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $interaksi_peserta_pembicara = (int)$_POST['interaksi_peserta_pembicara'];
     $alat_bantu_pembicara = (int)$_POST['alat_bantu_pembicara'];
     $nilai_keseluruhan_pembicara = (int)$_POST['nilai_keseluruhan_pembicara'];
-    
+
     // Narasumber
     $penguasaan_masalah_narasumber = (int)$_POST['penguasaan_masalah_narasumber'];
     $cara_penyajian_narasumber = (int)$_POST['cara_penyajian_narasumber'];
@@ -67,23 +78,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $interaksi_peserta_narasumber = (int)$_POST['interaksi_peserta_narasumber'];
     $alat_bantu_narasumber = (int)$_POST['alat_bantu_narasumber'];
     $nilai_komentar_saran = (int)$_POST['nilai_komentar_saran'];
-    
+
     // Lain-lain
     $makanan = (int)$_POST['makanan'];
     $sound_system = (int)$_POST['sound_system'];
     $layanan_hotel = (int)$_POST['layanan_hotel'];
-    
+
     // Text fields
     $rencana_tindakan = pg_escape_string($conn, $_POST['rencana_tindakan']);
     $komentar_tambahan = pg_escape_string($conn, $_POST['komentar_tambahan']);
-    
+
     // Tanda Tangan (New fields)
     $tanggal_surat = pg_escape_string($conn, $_POST['tanggalSurat']);
     $nama_kepala = pg_escape_string($conn, $_POST['kepala']);
     $nip_kepala = pg_escape_string($conn, $_POST['nipKepala']);
     $nama_ketua = pg_escape_string($conn, $_POST['ketua']);
     $nip_ketua = pg_escape_string($conn, $_POST['nipKetua']);
-    
+
     // Query INSERT untuk PostgreSQL
     $query = "INSERT INTO evaluasi (
         judul_pelatihan, nama, waktu, sertifikasi,
@@ -108,9 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         '$rencana_tindakan', '$komentar_tambahan',
         '$tanggal_surat', '$nama_kepala', '$nip_kepala', '$nama_ketua', '$nip_ketua'
     )";
-    
+
     $result = pg_query($conn, $query);
-    
+
     if ($result) {
         echo "<!DOCTYPE html>
         <html lang='id'>
@@ -253,7 +264,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </body>
         </html>";
     }
-    
+
     pg_close($conn);
 }
-?>
