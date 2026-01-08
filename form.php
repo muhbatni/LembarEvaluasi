@@ -399,6 +399,20 @@
                 opacity: 1;
             }
         }
+
+        /* Tanda * merah untuk field required */
+        .form-group label:not(.no-required)::after {
+            content: " *";
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        /* Khusus label radio di rating-row */
+        .rating-row>label:not(.no-required)::after {
+            content: " *";
+            color: #d32f2f;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -787,7 +801,7 @@
                     </div>
 
                     <div class="form-group" style="margin-top: 30px;">
-                        <label>Rencana Tindakan Penerapan:</label>
+                        <label class="no-required">Rencana Tindakan Penerapan:</label>
                         <textarea name="rencana_tindakan" rows="4" class="essay"></textarea>
                     </div>
                 </div>
@@ -797,7 +811,7 @@
                 <!-- KIRI: Komentar & Saran -->
                 <div class="column">
                     <div class="form-group">
-                        <label>Komentar dan Saran:</label>
+                        <label class="no-required">Komentar dan Saran:</label>
                         <textarea name="Komentar_saran" rows="5" class="essay"></textarea>
                     </div>
                 </div>
@@ -805,8 +819,8 @@
                 <!-- KANAN: Dampak Kompetensi -->
                 <div class="column">
                     <div class="form-group">
-                        <label>Dampak Pengembangan Kompetensi Terhadap Pegawai / Instansi:</label>
-                        <textarea name="dampak_kompetensi" rows="5" class="essay" required></textarea>
+                        <label class="no-required">Dampak Pengembangan Kompetensi Terhadap Pegawai / Instansi:</label>
+                        <textarea name="dampak_kompetensi" rows="5" class="essay"></textarea>
                     </div>
                 </div>
 
