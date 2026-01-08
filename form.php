@@ -356,7 +356,7 @@
     <a href="index.php" class="back-button" style="margin-bottom:15px; display:inline-block;">
         ← Kembali
     </a>
-    
+
     <div class="container">
         <div class="header">
             <h1>Lembar Evaluasi Pelatihan</h1>
@@ -742,14 +742,24 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Dampak Pengembangan Kompetensi Terhadap Pegawai/Instansi:</label>
-                <textarea name="dampak_kompetensi" rows="5" class="essay" required></textarea>
-            </div>
+            <div class="two-columns">
 
-            <div class="form-group">
-                <label>Komentar dan Saran:</label>
-                <textarea name="Komentar_saran" rows="5" class="essay"></textarea>
+                <!-- KIRI: Komentar & Saran -->
+                <div class="column">
+                    <div class="form-group">
+                        <label>Komentar dan Saran:</label>
+                        <textarea name="Komentar_saran" rows="5" class="essay"></textarea>
+                    </div>
+                </div>
+
+                <!-- KANAN: Dampak Kompetensi -->
+                <div class="column">
+                    <div class="form-group">
+                        <label>Dampak Pengembangan Kompetensi Terhadap Pegawai / Instansi:</label>
+                        <textarea name="dampak_kompetensi" rows="5" class="essay" required></textarea>
+                    </div>
+                </div>
+
             </div>
 
             <div class="signature-section">
@@ -761,7 +771,6 @@
 
                 <div class="ttd-wrapper">
 
-                    <!-- KIRI: Pegawai Yang Melaksanakan (NEW) -->
                     <div class="ttd-box">
                         <p><strong>Mengetahui,</strong></p>
 
@@ -780,7 +789,6 @@
                         </div>
                     </div>
 
-                    <!-- TENGAH -->
                     <div class="ttd-box">
                         <p><strong>Mengetahui,</strong></p>
 
@@ -799,7 +807,6 @@
                         </div>
                     </div>
 
-                    <!-- KANAN -->
                     <div class="ttd-box">
                         <p><strong>Menyetujui,</strong></p>
 
