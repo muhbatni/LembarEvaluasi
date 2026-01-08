@@ -900,6 +900,30 @@ $result = pg_query($conn, $query);
             </div>
         </div>
     </div>
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modern-modal">
+            <div class="modal-header modern-header">
+                <div class="icon-circle" style="background:#f44336;">🗑️</div>
+                <h2>Konfirmasi Hapus</h2>
+                <p>Data yang dihapus tidak dapat dikembalikan</p>
+            </div>
+
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus evaluasi:</p>
+                <p style="margin-top:10px;">
+                    <strong id="deleteJudul"></strong><br>
+                    <span id="deleteNama" style="color:#777;"></span>
+                </p>
+            </div>
+
+            <div class="modal-footer modern-footer">
+                <button onclick="closeDeleteModal()" class="btn-outline">Batal</button>
+                <a id="deleteConfirmBtn" class="btn-solid" style="background:#f44336;">
+                    Ya, Hapus
+                </a>
+            </div>
+        </div>
+    </div>
 
     <script>
         function openDeleteAllModal() {
@@ -959,6 +983,26 @@ $result = pg_query($conn, $query);
                 if (modal.style.display === 'block') {
                     loginAdmin();
                 }
+            }
+        });
+    </script>
+    <script>
+        function openDeleteModal(id, judul, nama) {
+            document.getElementById('deleteJudul').innerText = judul;
+            document.getElementById('deleteNama').innerText = 'Oleh: ' + nama;
+            document.getElementById('deleteConfirmBtn').href = 'delete.php?id=' + id;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        // Klik di luar modal untuk menutup
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('deleteModal');
+            if (e.target === modal) {
+                closeDeleteModal();
             }
         });
     </script>
