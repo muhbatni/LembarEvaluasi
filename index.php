@@ -35,7 +35,7 @@ $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? pg_escape_string($conn, $_GET['search']) : '';
 $where = "";
 if ($search != '') {
-    $where = "WHERE judul_pelatihan ILIKE '%$search%' OR nama ILIKE '%$search%'";
+    $where = "WHERE judul_pelatihan ILIKE '%$search%' OR nama ILIKE '%$search%' OR waktu ILIKE '%$search%'";
 }
 
 // Count total records
