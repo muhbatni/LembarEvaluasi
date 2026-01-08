@@ -567,6 +567,123 @@ $result = pg_query($conn, $query);
             background-color: #a0617bff;
             box-shadow: 0 5px 15px rgba(80, 99, 182, 0.3);
         }
+
+        /* CSS Modal Login */
+        .modern-modal {
+            padding: 32px;
+            border-radius: 18px;
+            max-width: 420px;
+            animation: popIn 0.35s ease;
+        }
+
+        .modern-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 0 auto 12px;
+        }
+
+        .modern-header h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .modern-header p {
+            font-size: 13px;
+            color: #777;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            color: #555;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1.5px solid #ddd;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .error-text {
+            color: #e53935;
+            font-size: 13px;
+            display: none;
+            margin-top: 6px;
+        }
+
+        .modern-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn-outline {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1.5px solid #ccc;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-solid {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-solid:hover {
+            background: #5568d3;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -591,7 +708,7 @@ $result = pg_query($conn, $query);
                 <?php if ($total_records > 0): ?>
                     <div class="header-actions">
                         <?php if (isset($_SESSION['admin'])): ?>
-                            <span class="btn btn-primary">👤 <?= $_SESSION['admin'] ?></span>
+                            <span class="btn btn-admin">👔 <?= $_SESSION['admin'] ?></span>
                             <a href="logout.php" class="btn">Logout</a>
                         <?php else: ?>
                             <button onclick="openAdminModal()" class="btn btn-admin">
@@ -747,20 +864,30 @@ $result = pg_query($conn, $query);
     </div>
 
     <div id="adminModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>🔐 Login Admin</h2>
+        <div class="modal-content modern-modal">
+            <div class="modal-header modern-header">
+                <div class="icon-circle">👤</div>
+                <h2>Admin Login</h2>
+                <p>Masuk untuk mengelola data evaluasi pelatihan</p>
             </div>
 
-            <div class="modal-body">
-                <input type="text" id="adminUser" placeholder="Username" class="input" required>
-                <input type="password" id="adminPass" placeholder="Password" class="input" required>
-                <p id="adminError" style="color:red; display:none"></p>
+            <div class="modal-body modern-body">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="adminUser" placeholder="Masukkan username" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPass" placeholder="Masukkan password" required>
+                </div>
+
+                <p id="adminError" class="error-text"></p>
             </div>
 
-            <div class="modal-footer">
-                <button onclick="closeAdminModal()" class="btn close-btn">Batal</button>
-                <button onclick="loginAdmin()" class="btn btn-primary">Login</button>
+            <div class="modal-footer modern-footer">
+                <button onclick="closeAdminModal()" class="btn-outline">Batal</button>
+                <button onclick="loginAdmin()" class="btn-solid">Login</button>
             </div>
         </div>
     </div>
@@ -814,6 +941,17 @@ $result = pg_query($conn, $query);
                     }
                 });
         }
+    </script>
+    <script>
+        // enter key to submit login
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const modal = document.getElementById('adminModal');
+                if (modal.style.display === 'block') {
+                    loginAdmin();
+                }
+            }
+        });
     </script>
 </body>
 
