@@ -803,9 +803,18 @@ $result = pg_query($conn, $query);
                                 </td>
                                 <td style="text-align: center;">
                                     <a href="detail.php?id=<?= $row['id'] ?>" class="action-btn btn-detail">📋 Detail</a>
-                                    <a href="delete.php?id=<?= $row['id'] ?>" class="action-btn btn-delete"
-                                        onclick="return confirm('Yakin ingin menghapus data evaluasi dari <?= htmlspecialchars($row['nama']) ?>?')">🗑️
-                                        Hapus</a>
+                                    <?php if (isset($_SESSION['admin'])): ?>
+                                        <button
+                                            class="action-btn btn-delete"
+                                            onclick="openDeleteModal(
+                                            <?= $row['id'] ?>,
+                                            '<?= htmlspecialchars(addslashes($row['judul_pelatihan'])) ?>',
+                                            '<?= htmlspecialchars(addslashes($row['nama'])) ?>'
+                                            )">🗑️ Hapus
+                                        </button>
+                                    <?php else: ?>
+                                        <span style="color:#999;font-size:12px;">Admin only</span>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
