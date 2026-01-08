@@ -864,8 +864,8 @@
             </div>
 
             <div class="form-group">
-                <label>Komentar Tambahan:</label>
-                <textarea name="komentar_tambahan" rows="5" class="essay"></textarea>
+                <label>Komentar Dan Saran:</label>
+                <textarea name="komentar_dan_saran" rows="5" class="essay"></textarea>
             </div>
 
             <div class="signature-section">
