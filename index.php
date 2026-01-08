@@ -910,6 +910,23 @@ $result = pg_query($conn, $query);
             </div>
         </div>
     </div>
+
+    <div id="loginSuccessModal" class="modal">
+        <div class="modal-content modern-modal">
+            <div class="modal-header modern-header">
+                <div class="icon-circle" style="background:#4CAF50;">✔</div>
+                <h2>LOGIN BERHASIL</h2>
+                <p>Selamat datang, Admin</p>
+            </div>
+
+            <div class="modal-footer modern-footer">
+                <button onclick="closeLoginSuccess()" class="btn-solid">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="deleteModal" class="modal">
         <div class="modal-content modern-modal">
             <div class="modal-header modern-header">
@@ -977,12 +994,22 @@ $result = pg_query($conn, $query);
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        location.reload();
+                        closeAdminModal();
+                        document.getElementById('loginSuccessModal').style.display = 'block';
+
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
                     } else {
                         document.getElementById('adminError').innerText = data.message;
                         document.getElementById('adminError').style.display = 'block';
                     }
                 });
+        }
+
+        function closeLoginSuccess() {
+            document.getElementById('loginSuccessModal').style.display = 'none';
+            location.reload();
         }
     </script>
     <script>
