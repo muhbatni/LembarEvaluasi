@@ -1,30 +1,6 @@
 <?php
+session_start(); // Start session for admin login
 include 'koneksi.php';
-
-// Handle delete all data
-if (isset($_GET['delete_all']) && $_GET['delete_all'] == 'confirm') {
-    // Hapus semua file sertifikasi
-    $query_files = "SELECT sertifikasi FROM evaluasi WHERE sertifikasi IS NOT NULL";
-    $result_files = pg_query($conn, $query_files);
-
-    while ($file = pg_fetch_assoc($result_files)) {
-        $file_path = 'uploads/' . $file['sertifikasi'];
-        if (file_exists($file_path)) {
-            unlink($file_path);
-        }
-    }
-
-    // Hapus semua data dari database
-    $delete_all_query = "DELETE FROM evaluasi";
-    $result_delete = pg_query($conn, $delete_all_query);
-
-    if ($result_delete) {
-        header('Location: index.php?deleted_all=success');
-    } else {
-        header('Location: index.php?deleted_all=error');
-    }
-    exit;
-}
 
 // Pagination
 $limit = 5; // Jumlah data per halaman
@@ -149,15 +125,6 @@ $result = pg_query($conn, $query);
         .btn-primary:hover {
             background-color: #5568d3;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-danger {
-            background-color: #f44336;
-        }
-
-        .btn-danger:hover {
-            background-color: #da190b;
-            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
         }
 
         .stats-container {
@@ -590,6 +557,16 @@ $result = pg_query($conn, $query);
                 font-size: 12px;
             }
         }
+
+        .btn-admin {
+            background-color: #751f43ff;
+            color: #fff;
+        }
+
+        .btn-admin:hover {
+            background-color: #a0617bff;
+            box-shadow: 0 5px 15px rgba(80, 99, 182, 0.3);
+        }
     </style>
 </head>
 
@@ -607,24 +584,21 @@ $result = pg_query($conn, $query);
             <?php endif; ?>
         <?php endif; ?>
 
-        <?php if (isset($_GET['deleted_all'])): ?>
-            <?php if ($_GET['deleted_all'] == 'success'): ?>
-                <div class="alert alert-success">
-                    ✓ Semua data evaluasi berhasil dihapus!
-                </div>
-            <?php else: ?>
-                <div class="alert alert-error">
-                    ✗ Gagal menghapus semua data!
-                </div>
-            <?php endif; ?>
-        <?php endif; ?>
-
         <div class="header">
             <h1>📊 Data Evaluasi Pelatihan</h1>
             <div class="header-actions">
                 <a href="form.php" class="btn">+ Tambah Evaluasi Baru</a>
                 <?php if ($total_records > 0): ?>
-                    <button onclick="openDeleteAllModal()" class="btn btn-danger">🗑️ Hapus Semua Data</button>
+                    <div class="header-actions">
+                        <?php if (isset($_SESSION['admin'])): ?>
+                            <span class="btn btn-primary">👤 <?= $_SESSION['admin'] ?></span>
+                            <a href="logout.php" class="btn">Logout</a>
+                        <?php else: ?>
+                            <button onclick="openAdminModal()" class="btn btn-admin">
+                                🔐 Login as Admin
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -683,7 +657,7 @@ $result = pg_query($conn, $query);
                                 $row['penguasaan_masalah_narasumber'] + $row['cara_penyajian_narasumber'] +
                                 $row['makanan'] + $row['sound_system'] + $row['layanan_hotel'];
                             $rata_rata = round($total_nilai / 15, 1);
-                            ?>
+                        ?>
                             <tr>
                                 <td style="font-weight: bold; color: #667eea;"><?= $no++ ?></td>
                                 <td>
@@ -739,7 +713,7 @@ $result = pg_query($conn, $query);
                     $end = min($total_pages, $page + 2);
 
                     for ($i = $start; $i <= $end; $i++):
-                        ?>
+                    ?>
                         <?php if ($i == $page): ?>
                             <span class="active"><?= $i ?></span>
                         <?php else: ?>
@@ -772,26 +746,21 @@ $result = pg_query($conn, $query);
         <?php endif; ?>
     </div>
 
-    <!-- Modal Konfirmasi Delete All -->
-    <div id="deleteAllModal" class="modal">
+    <div id="adminModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <span style="font-size: 48px;">⚠️</span>
-                <h2>Konfirmasi Hapus Semua Data</h2>
+                <h2>🔐 Login Admin</h2>
             </div>
+
             <div class="modal-body">
-                <p><strong>PERHATIAN!</strong> Anda akan menghapus <strong>SEMUA DATA EVALUASI (<?= $total_records ?>
-                        data)</strong> secara permanen.</p>
-                <p>Tindakan ini <strong>TIDAK DAPAT DIBATALKAN</strong> dan akan menghapus:</p>
-                <ul style="margin: 15px 0; padding-left: 20px;">
-                    <li>Semua data evaluasi dari database</li>
-                    <li>Semua file sertifikat yang telah diupload</li>
-                </ul>
-                <p style="color: #f44336; font-weight: bold;">Apakah Anda yakin ingin melanjutkan?</p>
+                <input type="text" id="adminUser" placeholder="Username" class="input" required>
+                <input type="password" id="adminPass" placeholder="Password" class="input" required>
+                <p id="adminError" style="color:red; display:none"></p>
             </div>
+
             <div class="modal-footer">
-                <button onclick="closeDeleteAllModal()" class="btn close-btn">Batal</button>
-                <a href="?delete_all=confirm" class="btn btn-danger">Ya, Hapus Semua Data</a>
+                <button onclick="closeAdminModal()" class="btn close-btn">Batal</button>
+                <button onclick="loginAdmin()" class="btn btn-primary">Login</button>
             </div>
         </div>
     </div>
@@ -806,11 +775,44 @@ $result = pg_query($conn, $query);
         }
 
         // Close modal when clicking outside
-        window.onclick = function (event) {
+        window.onclick = function(event) {
             var modal = document.getElementById('deleteAllModal');
             if (event.target == modal) {
                 closeDeleteAllModal();
             }
+        }
+    </script>
+
+    <script>
+        // Admin Login Modal
+        function openAdminModal() {
+            document.getElementById('adminModal').style.display = 'block';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function loginAdmin() {
+            const username = document.getElementById('adminUser').value;
+            const password = document.getElementById('adminPass').value;
+
+            fetch('admin_login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `username=${username}&password=${password}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    } else {
+                        document.getElementById('adminError').innerText = data.message;
+                        document.getElementById('adminError').style.display = 'block';
+                    }
+                });
         }
     </script>
 </body>
