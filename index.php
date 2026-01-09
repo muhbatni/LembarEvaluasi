@@ -696,7 +696,7 @@ $result = pg_query($conn, $query);
         }
 
         th.custom-header {
-            background: #EA7B7B !important;
+            background: #8662daff !important;
         }
     </style>
 </head>
