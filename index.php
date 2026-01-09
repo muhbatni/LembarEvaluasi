@@ -1003,7 +1003,7 @@ $result = pg_query($conn, $query);
 
             fetch('admin_login.php?nocache=' + Date.now(), {
                     method: 'POST',
-                    credentials: 'same-origin',
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
