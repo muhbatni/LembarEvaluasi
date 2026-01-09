@@ -6,7 +6,7 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$id = (int) $_GET['id'];
+$id = (int)$_GET['id'];
 $query = "SELECT * FROM evaluasi WHERE id = $id";
 $result = pg_query($conn, $query);
 
@@ -60,73 +60,79 @@ function getNilaiText($nilai)
             text-align: center;
             border-bottom: 3px solid #4CAF50;
             padding-bottom: 15px;
+            font-size: 20px;
+            text-transform: uppercase;
         }
 
-        .info-box {
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
             background: #f9f9f9;
-            padding: 20px;
+            padding: 12px;
             border-radius: 5px;
-            margin: 20px 0;
-        }
-
-        .info-row {
-            display: flex;
-            margin-bottom: 10px;
         }
 
         .info-label {
             font-weight: bold;
-            width: 200px;
+            font-size: 13px;
             color: #555;
+            margin-bottom: 5px;
         }
 
         .info-value {
-            flex: 1;
             color: #333;
+            font-size: 14px;
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #4CAF50;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
             border-bottom: 2px solid #4CAF50;
+            text-transform: uppercase;
         }
 
         .rating-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .rating-item {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            border-left: 4px solid #4CAF50;
+            background: #fafafa;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .rating-label {
-            font-weight: bold;
+            font-size: 13px;
             color: #555;
-            margin-bottom: 5px;
+            flex: 1;
         }
 
         .rating-value {
-            font-size: 24px;
+            font-size: 16px;
             font-weight: bold;
+            margin-right: 8px;
         }
 
         .badge {
             display: inline-block;
-            padding: 5px 12px;
+            padding: 3px 10px;
             border-radius: 3px;
-            font-size: 14px;
+            font-size: 11px;
             font-weight: bold;
-            margin-left: 10px;
         }
 
         .badge-1 {
@@ -156,11 +162,13 @@ function getNilaiText($nilai)
 
         .text-content {
             background: #f9f9f9;
-            padding: 15px;
+            padding: 12px;
             border-radius: 5px;
             border-left: 4px solid #2196F3;
             margin: 10px 0;
             white-space: pre-wrap;
+            font-size: 13px;
+            line-height: 1.6;
         }
 
         .btn {
@@ -170,6 +178,7 @@ function getNilaiText($nilai)
             text-decoration: none;
             border-radius: 5px;
             transition: background-color 0.3s;
+            font-size: 14px;
         }
 
         .btn-back {
@@ -198,8 +207,8 @@ function getNilaiText($nilai)
         }
 
         .certificate-box {
-            margin: 20px 0;
-            padding: 20px;
+            margin: 15px 0;
+            padding: 15px;
             background: #e3f2fd;
             border-radius: 5px;
             text-align: center;
@@ -214,174 +223,59 @@ function getNilaiText($nilai)
         }
 
         .signature-section {
-            margin-top: 40px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 5px;
+            margin-top: 30px;
+        }
+
+        .signature-date {
+            text-align: right;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
 
         .signature-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
             margin-top: 20px;
         }
 
         .signature-box {
             text-align: center;
-            padding: 20px;
-            background: white;
+            padding: 15px;
+            background: #fafafa;
             border-radius: 5px;
-            border: 1px solid #ddd;
         }
 
         .signature-title {
             font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 14px;
+            margin-bottom: 5px;
+            font-size: 13px;
         }
 
         .signature-space {
-            height: 80px;
-            margin: 20px 0;
+            height: 60px;
+            margin: 15px 0;
         }
 
         .signature-name {
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             border-top: 1px solid #333;
-            padding-top: 10px;
+            padding-top: 8px;
             margin-top: 10px;
         }
 
         .signature-nip {
-            font-size: 14px;
+            font-size: 12px;
             color: #666;
             margin-top: 5px;
         }
 
-        @media print {
-
-            .actions,
-            .btn {
-                display: none;
-            }
-        }
-
-        /* RESPONSIVE DETAIL PAGE */
-
-        /* Tablet */
-        @media (max-width: 1024px) {
-            .container {
-                padding: 25px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
-
-            .rating-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .info-label {
-                width: 160px;
-            }
-        }
-
-        /* Mobile */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .container {
-                padding: 20px;
-                border-radius: 6px;
-            }
-
-            h1 {
-                font-size: 18px;
-                padding-bottom: 10px;
-            }
-
-            .info-row {
-                flex-direction: column;
-                gap: 4px;
-                margin-bottom: 12px;
-            }
-
-            .info-label {
-                width: auto;
-                font-size: 13px;
-            }
-
-            .info-value {
-                font-size: 14px;
-            }
-
-            .section-title {
-                font-size: 16px;
-            }
-
-            .rating-item {
-                padding: 12px;
-            }
-
-            .rating-value {
-                font-size: 20px;
-            }
-
-            .badge {
-                display: inline-block;
-                margin-top: 6px;
-            }
-
-            /* Sertifikat */
-            .certificate-box {
-                padding: 15px;
-            }
-
-            /* Tanda tangan jadi vertikal */
-            .signature-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .signature-box {
-                padding: 15px;
-            }
-
-            .actions {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
-
-        /* Small Mobile */
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 16px;
-            }
-
-            .rating-label {
-                font-size: 13px;
-            }
-
-            .rating-value {
-                font-size: 18px;
-            }
-
-            .badge {
-                font-size: 12px;
-                padding: 4px 10px;
-            }
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
         /* WATERMARK VERIFIED */
@@ -393,18 +287,51 @@ function getNilaiText($nilai)
             font-size: 90px;
             font-weight: 900;
             color: rgba(76, 175, 80, 0.15);
-            /* hijau transparan */
             letter-spacing: 10px;
             z-index: 999;
             pointer-events: none;
             user-select: none;
         }
 
-        /* Saat cetak, watermark lebih jelas */
         @media print {
+
+            .actions,
+            .btn {
+                display: none;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+
             .watermark {
                 color: rgba(76, 175, 80, 0.25);
                 font-size: 110px;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .info-grid,
+            .rating-grid,
+            .two-columns,
+            .signature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rating-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
             }
         }
     </style>
@@ -416,279 +343,344 @@ function getNilaiText($nilai)
     <?php endif; ?>
 
     <div class="container">
-        <h1>Detail Evaluasi Pelatihan</h1>
+        <h1>Lembar Evaluasi Pelatihan</h1>
 
-        <div class="info-box">
-            <div class="info-row">
-                <div class="info-label">Judul Pelatihan:</div>
-                <div class="info-value"><?= htmlspecialchars($data['judul_pelatihan']) ?></div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Nama Peserta:</div>
+        <!-- INFORMASI PELATIHAN -->
+        <div style="background: #f0f7ff; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+            <div style="font-weight: bold; margin-bottom: 10px;">Judul Pelatihan / Workshop:</div>
+            <div style="font-size: 15px;"><?= htmlspecialchars($data['judul_pelatihan']) ?></div>
+        </div>
+
+        <!-- DATA PESERTA -->
+        <div style="font-weight: bold; font-size: 15px; margin: 15px 0 10px 0;">📋 Data Peserta</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Nama:</div>
                 <div class="info-value"><?= htmlspecialchars($data['nama']) ?></div>
             </div>
-            <div class="info-row">
-                <div class="info-label">Waktu:</div>
+            <div class="info-item">
+                <div class="info-label">NIP:</div>
+                <div class="info-value"><?= htmlspecialchars($data['nip']) ?></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Jabatan:</div>
+                <div class="info-value"><?= htmlspecialchars($data['jabatan']) ?></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Unit Kerja:</div>
+                <div class="info-value"><?= htmlspecialchars($data['unit_kerja']) ?></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Waktu / Tanggal Pelaksanaan:</div>
                 <div class="info-value"><?= htmlspecialchars($data['waktu']) ?></div>
             </div>
-            <div class="info-row">
-                <div class="info-label">Tanggal Input:</div>
-                <div class="info-value"><?= date('d F Y, H:i', strtotime($data['created_at'])) ?> WIB</div>
+            <div class="info-item">
+                <div class="info-label">Jam Pelajaran:</div>
+                <div class="info-value"><?= htmlspecialchars($data['jam_pelajaran']) ?> JP</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Jenis Pengembangan Kompetensi:</div>
+                <div class="info-value"><?= htmlspecialchars($data['jenis_kompetensi']) ?></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Penyelenggara:</div>
+                <div class="info-value"><?= htmlspecialchars($data['penyelenggara']) ?></div>
             </div>
         </div>
 
         <?php if ($data['sertifikasi']): ?>
             <div class="certificate-box">
-                <h3>📄 Sertifikat</h3>
+                <strong>📄 Sertifikat</strong>
                 <?php
                 $ext = strtolower(pathinfo($data['sertifikasi'], PATHINFO_EXTENSION));
                 if (in_array($ext, ['jpg', 'jpeg', 'png'])):
                 ?>
-                    <img src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" alt="Sertifikasi" class="certificate-img">
+                    <br><img src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" alt="Sertifikasi"
+                        class="certificate-img">
                 <?php else: ?>
-                    <p>
-                        <a href="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" target="_blank" class="btn btn-back">📄
-                            Lihat PDF</a>
-                    </p>
+                    <br><a href="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" target="_blank"
+                        class="btn btn-back" style="margin-top:10px;">📄 Lihat PDF</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
 
-        <div class="section-title">Pelaksanaan Pelatihan</div>
-        <div class="rating-grid">
-            <div class="rating-item">
-                <div class="rating-label">Tema Pelatihan</div>
-                <div class="rating-value">
-                    <?= $data['tema_pelatihan'] ?>
-                    <span class="badge badge-<?= $data['tema_pelatihan'] ?>">
-                        <?= getNilaiText($data['tema_pelatihan']) ?>
-                    </span>
+        <div style="margin: 15px 0; padding: 12px; background: #fff9e6; border-left: 4px solid #ffc107; font-style: italic; font-size: 13px; color: #555;">
+            <strong>Keterangan Nilai:</strong> 1 = Buruk | 2 = Kurang | 3 = Cukup | 4 = Bagus | 5 = Memuaskan
+        </div>
+
+        <!-- PELAKSANAAN PELATIHAN & PEMBICARA -->
+        <div class="two-columns">
+            <div>
+                <div class="section-title">Pelaksanaan Pelatihan</div>
+                <div class="rating-grid" style="grid-template-columns: 1fr;">
+                    <div class="rating-item">
+                        <span class="rating-label">Tema Pelatihan</span>
+                        <span>
+                            <span class="rating-value"><?= $data['tema_pelatihan'] ?></span>
+                            <span class="badge badge-<?= $data['tema_pelatihan'] ?>">
+                                <?= getNilaiText($data['tema_pelatihan']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Ketepatan Waktu</span>
+                        <span>
+                            <span class="rating-value"><?= $data['ketepatan_waktu'] ?></span>
+                            <span class="badge badge-<?= $data['ketepatan_waktu'] ?>">
+                                <?= getNilaiText($data['ketepatan_waktu']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Suasana</span>
+                        <span>
+                            <span class="rating-value"><?= $data['suasana'] ?></span>
+                            <span class="badge badge-<?= $data['suasana'] ?>">
+                                <?= getNilaiText($data['suasana']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Kelengkapan Materi</span>
+                        <span>
+                            <span class="rating-value"><?= $data['kelengkapan_materi'] ?></span>
+                            <span class="badge badge-<?= $data['kelengkapan_materi'] ?>">
+                                <?= getNilaiText($data['kelengkapan_materi']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Servis Penyelenggara</span>
+                        <span>
+                            <span class="rating-value"><?= $data['servis_penyelenggara'] ?></span>
+                            <span class="badge badge-<?= $data['servis_penyelenggara'] ?>">
+                                <?= getNilaiText($data['servis_penyelenggara']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Alat Bantu</span>
+                        <span>
+                            <span class="rating-value"><?= $data['alat_bantu_pelaksanaan'] ?></span>
+                            <span class="badge badge-<?= $data['alat_bantu_pelaksanaan'] ?>">
+                                <?= getNilaiText($data['alat_bantu_pelaksanaan']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Nilai Keseluruhan</span>
+                        <span>
+                            <span class="rating-value"><?= $data['nilai_keseluruhan_pelaksanaan'] ?></span>
+                            <span class="badge badge-<?= $data['nilai_keseluruhan_pelaksanaan'] ?>">
+                                <?= getNilaiText($data['nilai_keseluruhan_pelaksanaan']) ?>
+                            </span>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="rating-item">
-                <div class="rating-label">Ketepatan Waktu</div>
-                <div class="rating-value">
-                    <?= $data['ketepatan_waktu'] ?>
-                    <span class="badge badge-<?= $data['ketepatan_waktu'] ?>">
-                        <?= getNilaiText($data['ketepatan_waktu']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Suasana</div>
-                <div class="rating-value">
-                    <?= $data['suasana'] ?>
-                    <span class="badge badge-<?= $data['suasana'] ?>">
-                        <?= getNilaiText($data['suasana']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Kelengkapan Materi</div>
-                <div class="rating-value">
-                    <?= $data['kelengkapan_materi'] ?>
-                    <span class="badge badge-<?= $data['kelengkapan_materi'] ?>">
-                        <?= getNilaiText($data['kelengkapan_materi']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Servis Penyelenggara</div>
-                <div class="rating-value">
-                    <?= $data['servis_penyelenggara'] ?>
-                    <span class="badge badge-<?= $data['servis_penyelenggara'] ?>">
-                        <?= getNilaiText($data['servis_penyelenggara']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Alat Bantu</div>
-                <div class="rating-value">
-                    <?= $data['alat_bantu_pelaksanaan'] ?>
-                    <span class="badge badge-<?= $data['alat_bantu_pelaksanaan'] ?>">
-                        <?= getNilaiText($data['alat_bantu_pelaksanaan']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Nilai Keseluruhan</div>
-                <div class="rating-value">
-                    <?= $data['nilai_keseluruhan_pelaksanaan'] ?>
-                    <span class="badge badge-<?= $data['nilai_keseluruhan_pelaksanaan'] ?>">
-                        <?= getNilaiText($data['nilai_keseluruhan_pelaksanaan']) ?>
-                    </span>
+
+            <div>
+                <div class="section-title">Pembicara</div>
+                <div class="rating-grid" style="grid-template-columns: 1fr;">
+                    <div class="rating-item">
+                        <span class="rating-label">Penguasaan Masalah</span>
+                        <span>
+                            <span class="rating-value"><?= $data['penguasaan_masalah_pembicara'] ?></span>
+                            <span class="badge badge-<?= $data['penguasaan_masalah_pembicara'] ?>">
+                                <?= getNilaiText($data['penguasaan_masalah_pembicara']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Cara Penyajian</span>
+                        <span>
+                            <span class="rating-value"><?= $data['cara_penyajian_pembicara'] ?></span>
+                            <span class="badge badge-<?= $data['cara_penyajian_pembicara'] ?>">
+                                <?= getNilaiText($data['cara_penyajian_pembicara']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Manfaat Materi</span>
+                        <span>
+                            <span class="rating-value"><?= $data['manfaat_materi'] ?></span>
+                            <span class="badge badge-<?= $data['manfaat_materi'] ?>">
+                                <?= getNilaiText($data['manfaat_materi']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Interaksi dengan Peserta</span>
+                        <span>
+                            <span class="rating-value"><?= $data['interaksi_peserta_pembicara'] ?></span>
+                            <span class="badge badge-<?= $data['interaksi_peserta_pembicara'] ?>">
+                                <?= getNilaiText($data['interaksi_peserta_pembicara']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Alat Bantu</span>
+                        <span>
+                            <span class="rating-value"><?= $data['alat_bantu_pembicara'] ?></span>
+                            <span class="badge badge-<?= $data['alat_bantu_pembicara'] ?>">
+                                <?= getNilaiText($data['alat_bantu_pembicara']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Nilai Keseluruhan</span>
+                        <span>
+                            <span class="rating-value"><?= $data['nilai_keseluruhan_pembicara'] ?></span>
+                            <span class="badge badge-<?= $data['nilai_keseluruhan_pembicara'] ?>">
+                                <?= getNilaiText($data['nilai_keseluruhan_pembicara']) ?>
+                            </span>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="section-title">Pembicara</div>
-        <div class="rating-grid">
-            <div class="rating-item">
-                <div class="rating-label">Penguasaan Masalah</div>
-                <div class="rating-value">
-                    <?= $data['penguasaan_masalah_pembicara'] ?>
-                    <span class="badge badge-<?= $data['penguasaan_masalah_pembicara'] ?>">
-                        <?= getNilaiText($data['penguasaan_masalah_pembicara']) ?>
-                    </span>
+        <!-- NARASUMBER & LAIN-LAIN -->
+        <div class="two-columns">
+            <div>
+                <div class="section-title">Narasumber</div>
+                <div class="rating-grid" style="grid-template-columns: 1fr;">
+                    <div class="rating-item">
+                        <span class="rating-label">Penguasaan Masalah</span>
+                        <span>
+                            <span class="rating-value"><?= $data['penguasaan_masalah_narasumber'] ?></span>
+                            <span class="badge badge-<?= $data['penguasaan_masalah_narasumber'] ?>">
+                                <?= getNilaiText($data['penguasaan_masalah_narasumber']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Cara Penyajian</span>
+                        <span>
+                            <span class="rating-value"><?= $data['cara_penyajian_narasumber'] ?></span>
+                            <span class="badge badge-<?= $data['cara_penyajian_narasumber'] ?>">
+                                <?= getNilaiText($data['cara_penyajian_narasumber']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Manfaat Materi</span>
+                        <span>
+                            <span class="rating-value"><?= $data['manfaat_materi_narasumber'] ?></span>
+                            <span class="badge badge-<?= $data['manfaat_materi_narasumber'] ?>">
+                                <?= getNilaiText($data['manfaat_materi_narasumber']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Interaksi dengan Peserta</span>
+                        <span>
+                            <span class="rating-value"><?= $data['interaksi_peserta_narasumber'] ?></span>
+                            <span class="badge badge-<?= $data['interaksi_peserta_narasumber'] ?>">
+                                <?= getNilaiText($data['interaksi_peserta_narasumber']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Alat Bantu</span>
+                        <span>
+                            <span class="rating-value"><?= $data['alat_bantu_narasumber'] ?></span>
+                            <span class="badge badge-<?= $data['alat_bantu_narasumber'] ?>">
+                                <?= getNilaiText($data['alat_bantu_narasumber']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Komentar & Saran</span>
+                        <span>
+                            <span class="rating-value"><?= $data['nilai_komentar_saran'] ?></span>
+                            <span class="badge badge-<?= $data['nilai_komentar_saran'] ?>">
+                                <?= getNilaiText($data['nilai_komentar_saran']) ?>
+                            </span>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="rating-item">
-                <div class="rating-label">Cara Penyajian</div>
-                <div class="rating-value">
-                    <?= $data['cara_penyajian_pembicara'] ?>
-                    <span class="badge badge-<?= $data['cara_penyajian_pembicara'] ?>">
-                        <?= getNilaiText($data['cara_penyajian_pembicara']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Manfaat Materi</div>
-                <div class="rating-value">
-                    <?= $data['manfaat_materi'] ?>
-                    <span class="badge badge-<?= $data['manfaat_materi'] ?>">
-                        <?= getNilaiText($data['manfaat_materi']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Interaksi dengan Peserta</div>
-                <div class="rating-value">
-                    <?= $data['interaksi_peserta_pembicara'] ?>
-                    <span class="badge badge-<?= $data['interaksi_peserta_pembicara'] ?>">
-                        <?= getNilaiText($data['interaksi_peserta_pembicara']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Alat Bantu</div>
-                <div class="rating-value">
-                    <?= $data['alat_bantu_pembicara'] ?>
-                    <span class="badge badge-<?= $data['alat_bantu_pembicara'] ?>">
-                        <?= getNilaiText($data['alat_bantu_pembicara']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Nilai Keseluruhan</div>
-                <div class="rating-value">
-                    <?= $data['nilai_keseluruhan_pembicara'] ?>
-                    <span class="badge badge-<?= $data['nilai_keseluruhan_pembicara'] ?>">
-                        <?= getNilaiText($data['nilai_keseluruhan_pembicara']) ?>
-                    </span>
+
+            <div>
+                <div class="section-title">Lain-lain</div>
+                <div class="rating-grid" style="grid-template-columns: 1fr;">
+                    <div class="rating-item">
+                        <span class="rating-label">Makanan</span>
+                        <span>
+                            <span class="rating-value"><?= $data['makanan'] ?></span>
+                            <span class="badge badge-<?= $data['makanan'] ?>">
+                                <?= getNilaiText($data['makanan']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Sound System</span>
+                        <span>
+                            <span class="rating-value"><?= $data['sound_system'] ?></span>
+                            <span class="badge badge-<?= $data['sound_system'] ?>">
+                                <?= getNilaiText($data['sound_system']) ?>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-label">Layanan Hotel</span>
+                        <span>
+                            <span class="rating-value"><?= $data['layanan_hotel'] ?></span>
+                            <span class="badge badge-<?= $data['layanan_hotel'] ?>">
+                                <?= getNilaiText($data['layanan_hotel']) ?>
+                            </span>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="section-title">Narasumber</div>
-        <div class="rating-grid">
-            <div class="rating-item">
-                <div class="rating-label">Penguasaan Masalah</div>
-                <div class="rating-value">
-                    <?= $data['penguasaan_masalah_narasumber'] ?>
-                    <span class="badge badge-<?= $data['penguasaan_masalah_narasumber'] ?>">
-                        <?= getNilaiText($data['penguasaan_masalah_narasumber']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Cara Penyajian</div>
-                <div class="rating-value">
-                    <?= $data['cara_penyajian_narasumber'] ?>
-                    <span class="badge badge-<?= $data['cara_penyajian_narasumber'] ?>">
-                        <?= getNilaiText($data['cara_penyajian_narasumber']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Manfaat Materi</div>
-                <div class="rating-value">
-                    <?= $data['manfaat_materi_narasumber'] ?>
-                    <span class="badge badge-<?= $data['manfaat_materi_narasumber'] ?>">
-                        <?= getNilaiText($data['manfaat_materi_narasumber']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Interaksi dengan Peserta</div>
-                <div class="rating-value">
-                    <?= $data['interaksi_peserta_narasumber'] ?>
-                    <span class="badge badge-<?= $data['interaksi_peserta_narasumber'] ?>">
-                        <?= getNilaiText($data['interaksi_peserta_narasumber']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Alat Bantu</div>
-                <div class="rating-value">
-                    <?= $data['alat_bantu_narasumber'] ?>
-                    <span class="badge badge-<?= $data['alat_bantu_narasumber'] ?>">
-                        <?= getNilaiText($data['alat_bantu_narasumber']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Komentar & Saran</div>
-                <div class="rating-value">
-                    <?= $data['nilai_komentar_saran'] ?>
-                    <span class="badge badge-<?= $data['nilai_komentar_saran'] ?>">
-                        <?= getNilaiText($data['nilai_komentar_saran']) ?>
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-title">Lain-lain</div>
-        <div class="rating-grid">
-            <div class="rating-item">
-                <div class="rating-label">Makanan</div>
-                <div class="rating-value">
-                    <?= $data['makanan'] ?>
-                    <span class="badge badge-<?= $data['makanan'] ?>">
-                        <?= getNilaiText($data['makanan']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Sound System</div>
-                <div class="rating-value">
-                    <?= $data['sound_system'] ?>
-                    <span class="badge badge-<?= $data['sound_system'] ?>">
-                        <?= getNilaiText($data['sound_system']) ?>
-                    </span>
-                </div>
-            </div>
-            <div class="rating-item">
-                <div class="rating-label">Layanan Hotel</div>
-                <div class="rating-value">
-                    <?= $data['layanan_hotel'] ?>
-                    <span class="badge badge-<?= $data['layanan_hotel'] ?>">
-                        <?= getNilaiText($data['layanan_hotel']) ?>
-                    </span>
-                </div>
-            </div>
-        </div>
-
+        <!-- TEXT FIELDS -->
         <?php if ($data['rencana_tindakan']): ?>
-            <div class="section-title">Rencana Tindakan Penerapan</div>
-            <div class="text-content"><?= htmlspecialchars($data['rencana_tindakan']) ?></div>
+            <div style="margin-top: 15px;">
+                <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px;">Rencana Tindakan Penerapan:</div>
+                <div class="text-content"><?= htmlspecialchars($data['rencana_tindakan']) ?></div>
+            </div>
         <?php endif; ?>
 
-        <?php if ($data['komentar_tambahan']): ?>
-            <div class="section-title">Komentar Tambahan</div>
-            <div class="text-content"><?= htmlspecialchars($data['komentar_tambahan']) ?></div>
-        <?php endif; ?>
+        <div class="two-columns" style="margin-top: 15px;">
+            <?php if ($data['komentar_saran']): ?>
+                <div>
+                    <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px;">Komentar dan Saran:</div>
+                    <div class="text-content"><?= htmlspecialchars($data['komentar_saran']) ?></div>
+                </div>
+            <?php endif; ?>
 
-        <!-- SECTION TANDA TANGAN (DITAMBAHKAN) -->
-        <div class="section-title">Tanda Tangan</div>
+            <?php if ($data['dampak_kompetensi']): ?>
+                <div>
+                    <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px;">Dampak Pengembangan Kompetensi:</div>
+                    <div class="text-content"><?= htmlspecialchars($data['dampak_kompetensi']) ?></div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- TANDA TANGAN -->
         <div class="signature-section">
-            <div style="text-align: right; margin-bottom: 20px;">
-                <strong>Sidoarjo, <?= htmlspecialchars($data['tanggal_surat']) ?></strong>
+            <div class="signature-date">
+                Sidoarjo, <?= htmlspecialchars($data['tanggal_surat']) ?>
             </div>
 
             <div class="signature-grid">
                 <div class="signature-box">
                     <div class="signature-title">Mengetahui,</div>
-                    <div style="font-weight: bold; margin: 10px 0;">
+                    <div style="font-weight: bold; font-size: 12px; margin: 8px 0;">
+                        PEGAWAI YANG MELAKSANAKAN<br>
+                        PENGEMBANGAN KOMPETENSI
+                    </div>
+                    <div class="signature-space"></div>
+                    <div class="signature-name"><?= htmlspecialchars($data['nama_pegawai']) ?></div>
+                    <div class="signature-nip">NIP. <?= htmlspecialchars($data['nip_pegawai']) ?></div>
+                </div>
+
+                <div class="signature-box">
+                    <div class="signature-title">Mengetahui,</div>
+                    <div style="font-weight: bold; font-size: 12px; margin: 8px 0;">
                         KEPALA SUB BAGIAN<br>
                         TATA USAHA
                     </div>
@@ -699,7 +691,7 @@ function getNilaiText($nilai)
 
                 <div class="signature-box">
                     <div class="signature-title">Menyetujui,</div>
-                    <div style="font-weight: bold; margin: 10px 0;">
+                    <div style="font-weight: bold; font-size: 12px; margin: 8px 0;">
                         KETUA TEAM
                     </div>
                     <div class="signature-space"></div>
