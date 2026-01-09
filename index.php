@@ -711,6 +711,30 @@ $result = pg_query($conn, $query);
         th.custom-header {
             background: #8662daff !important;
         }
+
+        /* Button Verifikasi */
+        .btn-verify {
+            background: #4CAF50;
+            color: #fff;
+        }
+
+        .btn-verify:hover {
+            background: #43a047;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Button Batal Verifikasi */
+        .btn-unverify {
+            background: #ff9800;
+            color: #fff;
+        }
+
+        .btn-unverify:hover {
+            background: #fb8c00;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+        }
     </style>
 </head>
 
@@ -830,7 +854,7 @@ $result = pg_query($conn, $query);
                                     <small style="color: #999;"><?= date('H:i', strtotime($row['created_at'])) ?> WIB</small>
                                 </td>
                                 <td style="text-align:center;">
-                                    <?php if ($row['is_verified']): ?>
+                                    <?php if ($row['is_verified'] === 't'): ?>
                                         <span class="badge badge-5">✔ Verified</span>
                                     <?php else: ?>
                                         <span class="badge badge-2">⏳ Pending</span>
@@ -843,16 +867,14 @@ $result = pg_query($conn, $query);
                                     </a>
                                     <?php if (isset($_SESSION['admin'])): ?>
                                         <!-- Tombol Verifikasi -->
-                                        <?php if ($row['is_verified']): ?>
+                                        <<?php if ($row['is_verified'] === 't'): ?>
                                             <a href="verifikasi.php?id=<?= $row['id'] ?>&action=unverify"
-                                                class="action-btn"
-                                                style="background:#ff9800;color:#fff;">
-                                                ❌ Batal
+                                            class="action-btn btn-unverify">
+                                            ❌ Batal
                                             </a>
                                         <?php else: ?>
                                             <a href="verifikasi.php?id=<?= $row['id'] ?>&action=verify"
-                                                class="action-btn"
-                                                style="background:#4CAF50;color:#fff;">
+                                                class="action-btn btn-verify">
                                                 ✅ Verifikasi
                                             </a>
                                         <?php endif; ?>

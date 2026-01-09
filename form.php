@@ -1,4 +1,18 @@
 <!DOCTYPE html>
+<?php
+include 'koneksi.php';
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$is_verified = false;
+
+if ($id > 0) {
+    $q = pg_query($conn, "SELECT is_verified FROM evaluasi WHERE id = $id");
+    if ($q && pg_num_rows($q) > 0) {
+        $d = pg_fetch_assoc($q);
+        $is_verified = ($d['is_verified'] === 't');
+    }
+}
+?>
 <html lang="id">
 
 <head>
@@ -413,10 +427,29 @@
             color: #d32f2f;
             font-weight: bold;
         }
+
+        /* WATERMARK VERIFIED */
+        .watermark-verified {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 90px;
+            font-weight: bold;
+            color: rgba(76, 175, 80, 0.15);
+            z-index: 999;
+            pointer-events: none;
+            user-select: none;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 
 <body>
+    <?php if ($is_verified): ?>
+        <div class="watermark-verified">VERIFIED</div>
+    <?php endif; ?>
+
     <a href="index.php" class="back-button" style="margin-bottom:15px; display:inline-block;">
         ← Kembali
     </a>

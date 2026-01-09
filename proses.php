@@ -7,8 +7,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Ambil data dari form
     $judul_pelatihan = pg_escape_string($conn, $_POST['judul_pelatihan']);
+    
+    // Data Peserta (NEW FIELDS)
     $nama = pg_escape_string($conn, $_POST['nama']);
+    $nip = pg_escape_string($conn, $_POST['nip']);
+    $jabatan = pg_escape_string($conn, $_POST['jabatan']);
+    $unit_kerja = pg_escape_string($conn, $_POST['unit_kerja']);
     $waktu = pg_escape_string($conn, $_POST['waktu']);
+    $jam_pelajaran = (int)$_POST['jam_pelajaran'];
+    $jenis_kompetensi = pg_escape_string($conn, $_POST['jenis_kompetensi']);
+    $penyelenggara = pg_escape_string($conn, $_POST['penyelenggara']);
 
     // Handle upload file sertifikasi
     $sertifikasi = null;
@@ -85,20 +93,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sound_system = (int)$_POST['sound_system'];
     $layanan_hotel = (int)$_POST['layanan_hotel'];
 
-    // Text fields
+    // Text fields (UPDATED)
     $rencana_tindakan = pg_escape_string($conn, $_POST['rencana_tindakan']);
-    $komentar_tambahan = pg_escape_string($conn, $_POST['komentar_tambahan']);
+    $komentar_saran = pg_escape_string($conn, $_POST['Komentar_saran']); // Sesuai name di form
+    $dampak_kompetensi = pg_escape_string($conn, $_POST['dampak_kompetensi']); // NEW
 
-    // Tanda Tangan (New fields)
+    // Tanda Tangan (3 orang - UPDATED)
     $tanggal_surat = pg_escape_string($conn, $_POST['tanggalSurat']);
+    $nama_pegawai = pg_escape_string($conn, $_POST['pegawai']); // NEW
+    $nip_pegawai = pg_escape_string($conn, $_POST['nipPegawai']); // NEW
     $nama_kepala = pg_escape_string($conn, $_POST['kepala']);
     $nip_kepala = pg_escape_string($conn, $_POST['nipKepala']);
     $nama_ketua = pg_escape_string($conn, $_POST['ketua']);
     $nip_ketua = pg_escape_string($conn, $_POST['nipKetua']);
 
-    // Query INSERT untuk PostgreSQL
+    // Query INSERT untuk PostgreSQL (UPDATED)
     $query = "INSERT INTO evaluasi (
-        judul_pelatihan, nama, waktu, sertifikasi,
+        judul_pelatihan, nama, nip, jabatan, unit_kerja, waktu, jam_pelajaran, jenis_kompetensi, penyelenggara, sertifikasi,
         tema_pelatihan, ketepatan_waktu, suasana, kelengkapan_materi,
         servis_penyelenggara, alat_bantu_pelaksanaan, nilai_keseluruhan_pelaksanaan,
         penguasaan_masalah_pembicara, cara_penyajian_pembicara, manfaat_materi,
@@ -106,10 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         penguasaan_masalah_narasumber, cara_penyajian_narasumber, manfaat_materi_narasumber,
         interaksi_peserta_narasumber, alat_bantu_narasumber, nilai_komentar_saran,
         makanan, sound_system, layanan_hotel,
-        rencana_tindakan, komentar_tambahan,
-        tanggal_surat, nama_kepala, nip_kepala, nama_ketua, nip_ketua
+        rencana_tindakan, komentar_saran, dampak_kompetensi,
+        tanggal_surat, nama_pegawai, nip_pegawai, nama_kepala, nip_kepala, nama_ketua, nip_ketua
     ) VALUES (
-        '$judul_pelatihan', '$nama', '$waktu', " . ($sertifikasi ? "'$sertifikasi'" : "NULL") . ",
+        '$judul_pelatihan', '$nama', '$nip', '$jabatan', '$unit_kerja', '$waktu', $jam_pelajaran, '$jenis_kompetensi', '$penyelenggara', " . ($sertifikasi ? "'$sertifikasi'" : "NULL") . ",
         $tema_pelatihan, $ketepatan_waktu, $suasana, $kelengkapan_materi,
         $servis_penyelenggara, $alat_bantu_pelaksanaan, $nilai_keseluruhan_pelaksanaan,
         $penguasaan_masalah_pembicara, $cara_penyajian_pembicara, $manfaat_materi,
@@ -117,8 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $penguasaan_masalah_narasumber, $cara_penyajian_narasumber, $manfaat_materi_narasumber,
         $interaksi_peserta_narasumber, $alat_bantu_narasumber, $nilai_komentar_saran,
         $makanan, $sound_system, $layanan_hotel,
-        '$rencana_tindakan', '$komentar_tambahan',
-        '$tanggal_surat', '$nama_kepala', '$nip_kepala', '$nama_ketua', '$nip_ketua'
+        '$rencana_tindakan', '$komentar_saran', '$dampak_kompetensi',
+        '$tanggal_surat', '$nama_pegawai', '$nip_pegawai', '$nama_kepala', '$nip_kepala', '$nama_ketua', '$nip_ketua'
     )";
 
     $result = pg_query($conn, $query);
@@ -216,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     border-radius: 10px;
                     box-shadow: 0 10px 40px rgba(0,0,0,0.2);
                     text-align: center;
-                    max-width: 500px;
+                    max-width: 600px;
                 }
                 .error-icon {
                     font-size: 80px;
@@ -239,6 +250,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     color: #c62828;
                     margin-bottom: 20px;
                     font-size: 14px;
+                    max-height: 200px;
+                    overflow-y: auto;
+                    text-align: left;
+                    word-wrap: break-word;
                 }
                 .btn {
                     display: inline-block;
@@ -268,3 +283,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     pg_close($conn);
 }
+?>
