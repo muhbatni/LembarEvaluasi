@@ -244,6 +244,10 @@ function getNilaiText($nilai)
             padding: 15px;
             background: #fafafa;
             border-radius: 5px;
+
+            display: flex;
+            flex-direction: column;
+            height: 260px;
         }
 
         .signature-title {
@@ -253,8 +257,7 @@ function getNilaiText($nilai)
         }
 
         .signature-space {
-            height: 60px;
-            margin: 15px 0;
+            flex-grow: 1;
         }
 
         .signature-name {
@@ -262,7 +265,7 @@ function getNilaiText($nilai)
             font-size: 14px;
             border-top: 1px solid #333;
             padding-top: 8px;
-            margin-top: 10px;
+            margin-top: 0;
         }
 
         .signature-nip {
@@ -321,6 +324,7 @@ function getNilaiText($nilai)
         }
 
         @media (max-width: 768px) {
+
             .info-grid,
             .rating-grid,
             .two-columns,
