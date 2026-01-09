@@ -934,7 +934,7 @@ if ($id > 0) {
                         </div>
 
                         <div class="ttd-upload">
-                            <label for="ttdKepala">Upload TTD</label>
+                            <label for="ttdKepala">Upload TTD Kepala</label>
                             <input type="file" id="ttdKepala" name="ttdKepala" required
                                 accept="image/png,image/jpeg"
                                 onchange="previewTTD(this, 'previewKepala')">
@@ -960,7 +960,7 @@ if ($id > 0) {
                         </div>
 
                         <div class="ttd-upload">
-                            <label for="ttdKetua">Upload TTD</label>
+                            <label for="ttdKetua">Upload TTD Ketua</label>
                             <input type="file" id="ttdKetua" name="ttdKetua" required
                                 accept="image/png,image/jpeg"
                                 onchange="previewTTD(this, 'previewKetua')">
