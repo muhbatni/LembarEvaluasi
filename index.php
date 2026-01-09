@@ -785,6 +785,7 @@ $result = pg_query($conn, $query);
                             <th class="custom-header" style="text-align: center;">Sertifikat</th>
                             <th class="custom-header" style="text-align: center;">Rata-rata</th>
                             <th class="custom-header">Tanggal Input</th>
+                            <th class="custom-header" style="text-align:center;">Status</th>
                             <th class="custom-header" style="text-align: center; width: 180px;">Aksi</th>
                         </tr>
                     </thead>
@@ -828,9 +829,34 @@ $result = pg_query($conn, $query);
                                     <?= date('d/m/Y', strtotime($row['created_at'])) ?><br>
                                     <small style="color: #999;"><?= date('H:i', strtotime($row['created_at'])) ?> WIB</small>
                                 </td>
+                                <td style="text-align:center;">
+                                    <?php if ($row['is_verified']): ?>
+                                        <span class="badge badge-5">✔ Verified</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-2">⏳ Pending</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td style="text-align: center;">
-                                    <a href="detail.php?id=<?= $row['id'] ?>" class="action-btn btn-detail">📋 Detail</a>
+                                    <!-- Tombol Detail (SEMUA USER) -->
+                                    <a href="detail.php?id=<?= $row['id'] ?>" class="action-btn btn-detail">
+                                        📋 Detail
+                                    </a>
                                     <?php if (isset($_SESSION['admin'])): ?>
+                                        <!-- Tombol Verifikasi -->
+                                        <?php if ($row['is_verified']): ?>
+                                            <a href="verifikasi.php?id=<?= $row['id'] ?>&action=unverify"
+                                                class="action-btn"
+                                                style="background:#ff9800;color:#fff;">
+                                                ❌ Batal
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="verifikasi.php?id=<?= $row['id'] ?>&action=verify"
+                                                class="action-btn"
+                                                style="background:#4CAF50;color:#fff;">
+                                                ✅ Verifikasi
+                                            </a>
+                                        <?php endif; ?>
+                                        <!-- Tombol Hapus -->
                                         <button
                                             class="action-btn btn-delete"
                                             onclick="openDeleteModal(
@@ -839,8 +865,6 @@ $result = pg_query($conn, $query);
                                             '<?= htmlspecialchars(addslashes($row['nama'])) ?>'
                                             )">🗑️ Hapus
                                         </button>
-                                    <?php else: ?>
-                                        <span style="color:#999;font-size:12px;">Admin only</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
