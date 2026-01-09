@@ -383,10 +383,38 @@ function getNilaiText($nilai)
                 padding: 4px 10px;
             }
         }
+
+        /* WATERMARK VERIFIED */
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 90px;
+            font-weight: 900;
+            color: rgba(76, 175, 80, 0.15);
+            /* hijau transparan */
+            letter-spacing: 10px;
+            z-index: 999;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Saat cetak, watermark lebih jelas */
+        @media print {
+            .watermark {
+                color: rgba(76, 175, 80, 0.25);
+                font-size: 110px;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <?php if ($data['is_verified'] === 't'): ?>
+        <div class="watermark">VERIFIED</div>
+    <?php endif; ?>
+
     <div class="container">
         <h1>Detail Evaluasi Pelatihan</h1>
 
@@ -415,7 +443,7 @@ function getNilaiText($nilai)
                 <?php
                 $ext = strtolower(pathinfo($data['sertifikasi'], PATHINFO_EXTENSION));
                 if (in_array($ext, ['jpg', 'jpeg', 'png'])):
-                    ?>
+                ?>
                     <img src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" alt="Sertifikasi" class="certificate-img">
                 <?php else: ?>
                     <p>
