@@ -442,6 +442,32 @@ if ($id > 0) {
             user-select: none;
             text-transform: uppercase;
         }
+
+        .ttd-image {
+            max-height: 90px;
+            max-width: 100%;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .ttd-upload {
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .ttd-upload input[type="file"] {
+            display: none;
+        }
+
+        .ttd-upload label {
+            cursor: pointer;
+            color: #2196F3;
+            font-weight: bold;
+        }
+
+        .ttd-upload label:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -876,7 +902,16 @@ if ($id > 0) {
                             PENGEMBANGAN KOMPETENSI
                         </p>
 
-                        <div class="ttd-fill"></div>
+                        <div class="ttd-fill">
+                            <img id="previewPegawai" class="ttd-image" style="display:none;">
+                        </div>
+
+                        <div class="ttd-upload">
+                            <label for="ttdPegawai">Upload TTD</label>
+                            <input type="file" id="ttdPegawai" name="ttdPegawai"
+                                accept="image/png,image/jpeg"
+                                onchange="previewTTD(this, 'previewPegawai')">
+                        </div>
 
                         <input type="text" name="pegawai" class="line-input" placeholder="Nama Lengkap" required>
 
@@ -894,7 +929,16 @@ if ($id > 0) {
                             TATA USAHA
                         </p>
 
-                        <div class="ttd-fill"></div>
+                        <div class="ttd-fill">
+                            <img id="previewKepala" class="ttd-image" style="display:none;">
+                        </div>
+
+                        <div class="ttd-upload">
+                            <label for="ttdKepala">Upload TTD</label>
+                            <input type="file" id="ttdKepala" name="ttdKepala"
+                                accept="image/png,image/jpeg"
+                                onchange="previewTTD(this, 'previewKepala')">
+                        </div>
 
                         <input type="text" name="kepala" class="line-input" placeholder="Nama Lengkap" required>
 
@@ -911,7 +955,16 @@ if ($id > 0) {
                             KETUA TEAM
                         </p>
 
-                        <div class="ttd-fill"></div>
+                        <div class="ttd-fill">
+                            <img id="previewKetua" class="ttd-image" style="display:none;">
+                        </div>
+
+                        <div class="ttd-upload">
+                            <label for="ttdKetua">Upload TTD</label>
+                            <input type="file" id="ttdKetua" name="ttdKetua"
+                                accept="image/png,image/jpeg"
+                                onchange="previewTTD(this, 'previewKetua')">
+                        </div>
 
                         <input type="text" name="ketua" class="line-input" placeholder="Nama Lengkap" required>
 
@@ -1039,7 +1092,31 @@ if ($id > 0) {
             document.getElementById('alertModal').style.display = 'none';
         }
     </script>
+    <!-- Preview TTD JS -->
+    <script>
+        function previewTTD(input, previewId) {
+            const preview = document.getElementById(previewId);
 
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                // Validasi ukuran max 2MB
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran TTD maksimal 2MB');
+                    input.value = '';
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 
 </html>
