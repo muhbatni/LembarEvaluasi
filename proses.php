@@ -1,5 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Jakarta'); // Set timezone to Jakarta
+require_once 'session.php'; // session management
 include 'koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

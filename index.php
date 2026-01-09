@@ -1,5 +1,18 @@
 <?php
-session_start(); // Start session for admin login
+date_default_timezone_set('Asia/Jakarta');
+require_once 'session.php';
+
+// auto logout 1 hari
+if (isset($_SESSION['admin'])) {
+    if (isset($_SESSION['LAST_ACTIVITY']) && time() - $_SESSION['LAST_ACTIVITY'] > 86400) {
+        session_unset();
+        session_destroy();
+        header("Location: index.php");
+        exit;
+    }
+    $_SESSION['LAST_ACTIVITY'] = time();
+}
+
 include 'koneksi.php';
 
 // Pagination
@@ -988,12 +1001,12 @@ $result = pg_query($conn, $query);
             const username = document.getElementById('adminUser').value;
             const password = document.getElementById('adminPass').value;
 
-            fetch('admin_login.php', {
+            fetch('admin_login.php?nocache=' + Date.now(), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: `username=${username}&password=${password}`
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
                 })
                 .then(res => res.json())
                 .then(data => {
