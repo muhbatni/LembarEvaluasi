@@ -3,3 +3,4 @@ koneksi.php
 uploads/
 *.env
 hash.php
+db.txt
