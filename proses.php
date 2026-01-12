@@ -3,12 +3,52 @@ date_default_timezone_set('Asia/Jakarta'); // Set timezone to Jakarta
 require_once 'session.php'; // session management
 include 'koneksi.php';
 
+function uploadByRole($file, $baseDir, $prefix, $allowedExt, $maxSize)
+{
+    if (!isset($file) || $file['error'] !== 0) {
+        return null;
+    }
+
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowedExt)) {
+        die("Format file tidak valid");
+    }
+
+    if ($file['size'] > $maxSize) {
+        die("Ukuran file terlalu besar");
+    }
+
+    $tanggal = date('Y-m-d');
+    $targetDir = $baseDir . '/' . $tanggal . '/';
+
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0777, true);
+    }
+
+    $time = date('Hi');
+    $counter = 1;
+
+    do {
+        $filename = "{$prefix}_{$time}_{$counter}.{$ext}";
+        $targetPath = $targetDir . $filename;
+        $counter++;
+    } while (file_exists($targetPath));
+
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        die("Gagal upload file");
+    }
+
+    // simpan RELATIF dari uploads/
+    return str_replace('uploads/', '', $targetPath);
+}
+
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Ambil data dari form
     $judul_pelatihan = pg_escape_string($conn, $_POST['judul_pelatihan']);
-    
-    // Data Peserta (NEW FIELDS)
+
+    // Data Peserta
     $nama = pg_escape_string($conn, $_POST['nama']);
     $nip = pg_escape_string($conn, $_POST['nip']);
     $jabatan = pg_escape_string($conn, $_POST['jabatan']);
@@ -18,50 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $jenis_kompetensi = pg_escape_string($conn, $_POST['jenis_kompetensi']);
     $penyelenggara = pg_escape_string($conn, $_POST['penyelenggara']);
 
-    // Handle upload file sertifikasi
-    $sertifikasi = null;
-    if (isset($_FILES['sertifikasi']) && $_FILES['sertifikasi']['error'] == 0) {
-        $allowed = ['jpg', 'jpeg', 'png', 'pdf'];
-        $filename = $_FILES['sertifikasi']['name'];
-        $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $filesize = $_FILES['sertifikasi']['size'];
-
-        // Validasi
-        if (!in_array($filetype, $allowed)) {
-            die("Error: Format file tidak didukung. Hanya JPG, PNG, dan PDF yang diperbolehkan.");
-        }
-
-        if ($filesize > 5 * 1024 * 1024) { // 5MB
-            die("Error: Ukuran file terlalu besar. Maksimal 5MB.");
-        }
-
-        // Buat folder uploads jika belum ada
-        $upload_dir = 'uploads/';
-        if (!file_exists($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-
-        // Upload configuration
-        $extension = strtolower(pathinfo($_FILES['sertifikasi']['name'], PATHINFO_EXTENSION));
-
-        // timestamp jam + menit (misal 0921)
-        $time = date('Hi');
-
-        // nomor urut
-        $counter = 1;
-        do {
-            $new_filename = $time . '_' . $counter . '.' . $extension;
-            $upload_path = $upload_dir . $new_filename;
-            $counter++;
-        } while (file_exists($upload_path));
-
-        // upload file
-        if (move_uploaded_file($_FILES['sertifikasi']['tmp_name'], $upload_path)) {
-            $sertifikasi = $new_filename;
-        } else {
-            die("Error: Gagal mengupload file.");
-        }
-    }
+    // Upload Sertifikasi
+    $sertifikasi = uploadByRole(
+        $_FILES['sertifikasi'],
+        'uploads/sertifikat',
+        'sertifikat',
+        ['jpg', 'jpeg', 'png', 'pdf'],
+        5 * 1024 * 1024
+    );
 
     // Pelaksanaan Pelatihan
     $tema_pelatihan = (int)$_POST['tema_pelatihan'];
@@ -93,21 +97,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sound_system = (int)$_POST['sound_system'];
     $layanan_hotel = (int)$_POST['layanan_hotel'];
 
-    // Text fields (UPDATED)
+    // Text fields (Field tambahan)
     $rencana_tindakan = pg_escape_string($conn, $_POST['rencana_tindakan']);
-    $komentar_saran = pg_escape_string($conn, $_POST['Komentar_saran']); // Sesuai name di form
-    $dampak_kompetensi = pg_escape_string($conn, $_POST['dampak_kompetensi']); // NEW
+    $komentar_saran = pg_escape_string($conn, $_POST['Komentar_saran']);
+    $dampak_kompetensi = pg_escape_string($conn, $_POST['dampak_kompetensi']);
 
-    // Tanda Tangan (3 orang - UPDATED)
+    // Tanda Tangan (3 orang)
     $tanggal_surat = pg_escape_string($conn, $_POST['tanggalSurat']);
-    $nama_pegawai = pg_escape_string($conn, $_POST['pegawai']); // NEW
-    $nip_pegawai = pg_escape_string($conn, $_POST['nipPegawai']); // NEW
+    $nama_pegawai = pg_escape_string($conn, $_POST['pegawai']);
+    $nip_pegawai = pg_escape_string($conn, $_POST['nipPegawai']);
     $nama_kepala = pg_escape_string($conn, $_POST['kepala']);
     $nip_kepala = pg_escape_string($conn, $_POST['nipKepala']);
     $nama_ketua = pg_escape_string($conn, $_POST['ketua']);
     $nip_ketua = pg_escape_string($conn, $_POST['nipKetua']);
 
-    // Query INSERT untuk PostgreSQL (UPDATED)
+    // ===== UPLOAD TTD =====
+    $ttd_pegawai = uploadByRole(
+        $_FILES['ttdPegawai'],
+        'uploads/ttd/pegawai',
+        'ttd_pegawai',
+        ['jpg', 'jpeg', 'png'],
+        2 * 1024 * 1024
+    );
+
+    $ttd_kepala = uploadByRole(
+        $_FILES['ttdKepala'],
+        'uploads/ttd/kepala',
+        'ttd_kepala',
+        ['jpg', 'jpeg', 'png'],
+        2 * 1024 * 1024
+    );
+
+    $ttd_ketua = uploadByRole(
+        $_FILES['ttdKetua'],
+        'uploads/ttd/ketua',
+        'ttd_ketua',
+        ['jpg', 'jpeg', 'png'],
+        2 * 1024 * 1024
+    );
+
+    // Query INSERT untuk PostgreSQL (pg_query)
     $query = "INSERT INTO evaluasi (
         judul_pelatihan, nama, nip, jabatan, unit_kerja, waktu, jam_pelajaran, jenis_kompetensi, penyelenggara, sertifikasi,
         tema_pelatihan, ketepatan_waktu, suasana, kelengkapan_materi,
@@ -118,7 +147,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         interaksi_peserta_narasumber, alat_bantu_narasumber, nilai_komentar_saran,
         makanan, sound_system, layanan_hotel,
         rencana_tindakan, komentar_saran, dampak_kompetensi,
-        tanggal_surat, nama_pegawai, nip_pegawai, nama_kepala, nip_kepala, nama_ketua, nip_ketua
+        tanggal_surat, nama_pegawai, nip_pegawai, nama_kepala, nip_kepala, nama_ketua, nip_ketua,
+        ttd_pegawai, ttd_kepala, ttd_ketua
     ) VALUES (
         '$judul_pelatihan', '$nama', '$nip', '$jabatan', '$unit_kerja', '$waktu', $jam_pelajaran, '$jenis_kompetensi', '$penyelenggara', " . ($sertifikasi ? "'$sertifikasi'" : "NULL") . ",
         $tema_pelatihan, $ketepatan_waktu, $suasana, $kelengkapan_materi,
@@ -129,7 +159,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $interaksi_peserta_narasumber, $alat_bantu_narasumber, $nilai_komentar_saran,
         $makanan, $sound_system, $layanan_hotel,
         '$rencana_tindakan', '$komentar_saran', '$dampak_kompetensi',
-        '$tanggal_surat', '$nama_pegawai', '$nip_pegawai', '$nama_kepala', '$nip_kepala', '$nama_ketua', '$nip_ketua'
+        '$tanggal_surat', '$nama_pegawai', '$nip_pegawai', '$nama_kepala', '$nip_kepala', '$nama_ketua', '$nip_ketua',
+        " . ($ttd_pegawai ? "'$ttd_pegawai'" : "NULL") . ",
+        " . ($ttd_kepala ? "'$ttd_kepala'" : "NULL") . ",
+        " . ($ttd_ketua ? "'$ttd_ketua'" : "NULL") . "
     )";
 
     $result = pg_query($conn, $query);
@@ -280,7 +313,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </body>
         </html>";
     }
-
-    pg_close($conn);
 }
-?>
