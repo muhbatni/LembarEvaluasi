@@ -870,7 +870,7 @@ $result = pg_query($conn, $query);
                                     </a>
                                     <?php if (isset($_SESSION['admin'])): ?>
                                         <!-- Tombol Verifikasi -->
-                                        <<?php if ($row['is_verified'] === 't'): ?>
+                                        <?php if ($row['is_verified'] === 't'): ?>
                                             <a href="verifikasi.php?id=<?= $row['id'] ?>&action=unverify"
                                             class="action-btn btn-unverify">
                                             ❌ Batal
