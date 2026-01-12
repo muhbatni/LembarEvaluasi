@@ -996,32 +996,48 @@ if ($id > 0) {
             const fileNameDisplay = document.getElementById('fileNameDisplay');
             const imagePreview = document.getElementById('imagePreview');
 
+            imagePreview.innerHTML = '';
+            fileNameDisplay.innerHTML = '';
+
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 const fileName = file.name;
-                const fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
 
-                // Validasi ukuran file (maksimal 5MB)
+                // Validasi ukuran max 5MB
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('Ukuran file terlalu besar!<br>Maksimal <b>5MB</b>.');
+                    alert('Ukuran file terlalu besar! Maksimal 5MB.');
                     input.value = '';
-                    fileNameDisplay.innerHTML = '';
-                    imagePreview.innerHTML = '';
                     return;
                 }
 
                 // Tampilkan nama file
-                fileNameDisplay.innerHTML = `<div class="file-name">✓ ${fileName} (${fileSize} MB)</div>`;
+                fileNameDisplay.innerHTML = `
+            <div class="file-name">✓ ${fileName} (${fileSize} MB)</div>
+        `;
 
-                // Preview untuk gambar
+                // PREVIEW GAMBAR
                 if (file.type.match('image.*')) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        imagePreview.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
+                        imagePreview.innerHTML = `
+                    <img src="${e.target.result}" class="preview-image">
+                `;
                     };
                     reader.readAsDataURL(file);
-                } else if (file.type === 'application/pdf') {
-                    imagePreview.innerHTML = '<div style="margin-top: 10px; color: #666;">📄 File PDF siap diupload</div>';
+                }
+
+                // PREVIEW PDF
+                else if (file.type === 'application/pdf') {
+                    const fileURL = URL.createObjectURL(file);
+                    imagePreview.innerHTML = `
+                <iframe 
+                    src="${fileURL}" 
+                    width="100%" 
+                    height="400px"
+                    style="border:1px solid #ddd; border-radius:4px; margin-top:10px;">
+                </iframe>
+            `;
                 }
             }
         }
