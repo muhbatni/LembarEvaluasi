@@ -580,7 +580,7 @@ if ($id > 0) {
                 <div class="upload-box">
                     <div class="upload-icon">📄</div>
                     <label for="sertifikasi" class="upload-label">Pilih File</label>
-                    <input type="file" id="sertifikasi" name="sertifikasi" accept=".jpg,.jpeg,.png,.pdf"
+                    <input type="file" id="sertifikasi" name="sertifikasi" accept=".jpg,.jpeg,.png,.pdf" required
                         onchange="displayFileName(this)">
                     <div class="file-info">Format yang didukung: JPG, PNG, PDF (Max: 5MB)</div>
                     <div id="fileNameDisplay"></div>
