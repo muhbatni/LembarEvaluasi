@@ -758,6 +758,12 @@ $result = pg_query($conn, $query);
         <div class="header">
             <h1>📊 Data Evaluasi Pelatihan</h1>
             <div class="header-actions">
+                <?php if (isset($_SESSION['admin'])): ?>
+                    <a href="export_csv.php<?= $search ? '?search=' . urlencode($search) : '' ?>"
+                        class="btn btn-primary">
+                        📥 Export CSV
+                    </a>
+                <?php endif; ?>
                 <a href="form.php" class="btn">+ Tambah Evaluasi Baru</a>
                 <?php if ($total_records > 0): ?>
                     <div class="header-actions">
@@ -872,8 +878,8 @@ $result = pg_query($conn, $query);
                                         <!-- Tombol Verifikasi -->
                                         <?php if ($row['is_verified'] === 't'): ?>
                                             <a href="verifikasi.php?id=<?= $row['id'] ?>&action=unverify"
-                                            class="action-btn btn-unverify">
-                                            ❌ Batal
+                                                class="action-btn btn-unverify">
+                                                ❌ Batal
                                             </a>
                                         <?php else: ?>
                                             <a href="verifikasi.php?id=<?= $row['id'] ?>&action=verify"
