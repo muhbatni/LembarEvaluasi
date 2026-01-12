@@ -738,6 +738,20 @@ $result = pg_query($conn, $query);
             background: #FFE0B2;
             box-shadow: none;
         }
+
+        .admin-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .admin-top,
+        .admin-bottom {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
 
@@ -757,24 +771,39 @@ $result = pg_query($conn, $query);
 
         <div class="header">
             <h1>📊 Data Evaluasi Pelatihan</h1>
-            <div class="header-actions">
-                <?php if (isset($_SESSION['admin'])): ?>
-                    <a href="export_csv.php<?= $search ? '?search=' . urlencode($search) : '' ?>"
-                        class="btn btn-primary">
-                        📥 Export CSV
+            <div class="header-actions admin-layout">
+
+                <!-- BARIS ATAS -->
+                <div class="admin-top">
+                    <a href="form.php" class="btn">
+                        + Tambah Evaluasi
                     </a>
-                <?php endif; ?>
-                <a href="form.php" class="btn">+ Tambah Evaluasi Baru</a>
-                <?php if ($total_records > 0): ?>
-                    <div class="header-actions">
-                        <?php if (isset($_SESSION['admin'])): ?>
-                            <span class="btn btn-admin">👔 <?= $_SESSION['admin'] ?></span>
-                            <a href="logout.php" class="btn btn-logout">Logout</a>
-                        <?php else: ?>
-                            <button onclick="openAdminModal()" class="btn btn-admin">
-                                🔐 Login as Admin
-                            </button>
-                        <?php endif; ?>
+
+                    <?php if (isset($_SESSION['admin'])): ?>
+                        <span class="btn btn-admin">
+                            👔 <?= $_SESSION['admin'] ?>
+                        </span>
+                        <a href="logout.php" class="btn btn-logout">
+                            Logout
+                        </a>
+                    <?php else: ?>
+                        <button onclick="openAdminModal()" class="btn btn-admin">
+                            🔐 Login Admin
+                        </button>
+                    <?php endif; ?>
+                </div>
+
+                <!-- BARIS BAWAH -->
+                <?php if (isset($_SESSION['admin'])): ?>
+                    <div class="admin-bottom">
+                        <a href="grafik.php" class="btn btn-secondary">
+                            📊 Grafik
+                        </a>
+
+                        <a href="export_csv.php<?= $search ? '?search=' . urlencode($search) : '' ?>"
+                            class="btn btn-primary">
+                            📥 Export CSV
+                        </a>
                     </div>
                 <?php endif; ?>
             </div>
