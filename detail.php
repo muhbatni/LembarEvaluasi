@@ -511,8 +511,12 @@ function getNilaiText($nilai)
                         <br><img src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" alt="Sertifikasi"
                             class="certificate-img">
                     <?php else: ?>
-                        <br><a href="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" target="_blank"
-                            class="btn btn-back" style="margin-top:10px;">📄 Lihat PDF</a>
+                        <iframe
+                            src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>"
+                            width="100%"
+                            height="400"
+                            style="border:1px solid #ccc; border-radius:6px; margin-top:10px;">
+                        </iframe>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
