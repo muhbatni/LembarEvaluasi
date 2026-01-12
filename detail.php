@@ -438,6 +438,13 @@ function getNilaiText($nilai)
             color: #999;
             font-style: italic;
         }
+
+        .signature-img {
+            max-height: 90px;
+            max-width: 100%;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 
@@ -785,7 +792,11 @@ function getNilaiText($nilai)
                             PEGAWAI YANG MELAKSANAKAN<br>
                             PENGEMBANGAN KOMPETENSI
                         </div>
-                        <div class="signature-space"></div>
+                        <div class="signature-space">
+                            <?php if (!empty($data['ttd_pegawai'])): ?>
+                                <img src="uploads/<?= htmlspecialchars($data['ttd_pegawai']) ?>" class="signature-img">
+                            <?php endif; ?>
+                        </div>
                         <div class="signature-name"><?= htmlspecialchars($data['nama_pegawai']) ?></div>
                         <div class="signature-nip">NIP. <?= htmlspecialchars($data['nip_pegawai']) ?></div>
                     </div>
@@ -796,7 +807,11 @@ function getNilaiText($nilai)
                             KEPALA SUB BAGIAN<br>
                             TATA USAHA
                         </div>
-                        <div class="signature-space"></div>
+                        <div class="signature-space">
+                            <?php if (!empty($data['ttd_kepala'])): ?>
+                                <img src="uploads/<?= htmlspecialchars($data['ttd_kepala']) ?>" class="signature-img">
+                            <?php endif; ?>
+                        </div>
                         <div class="signature-name"><?= htmlspecialchars($data['nama_kepala']) ?></div>
                         <div class="signature-nip">NIP. <?= htmlspecialchars($data['nip_kepala']) ?></div>
                     </div>
@@ -806,7 +821,11 @@ function getNilaiText($nilai)
                         <div style="font-weight: bold; font-size: 12px; margin: 8px 0;">
                             KETUA TEAM
                         </div>
-                        <div class="signature-space"></div>
+                        <div class="signature-space">
+                            <?php if (!empty($data['ttd_ketua'])): ?>
+                                <img src="uploads/<?= htmlspecialchars($data['ttd_ketua']) ?>" class="signature-img">
+                            <?php endif; ?>
+                        </div>
                         <div class="signature-name"><?= htmlspecialchars($data['nama_ketua']) ?></div>
                         <div class="signature-nip">NIP. <?= htmlspecialchars($data['nip_ketua']) ?></div>
                     </div>
