@@ -54,7 +54,7 @@ $result = pg_query($conn, $query);
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #F5F7FB;
             min-height: 100vh;
             padding: 20px;
         }
@@ -114,7 +114,7 @@ $result = pg_query($conn, $query);
         .btn {
             display: inline-block;
             padding: 12px 24px;
-            background-color: #4CAF50;
+            background-color: #667eea;
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -148,15 +148,17 @@ $result = pg_query($conn, $query);
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #be7ea9ff 0%, #bd54a4ff 100%);
-            color: white;
+            background: #F0F2FF;
+            color: #3F3D56;
+            border: 1px solid #E2E4FF;
+            box-shadow: none;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(111, 57, 57, 0.1);
         }
 
         .stat-card h3 {
+            color: #667eea;
             font-size: 32px;
             margin-bottom: 5px;
         }
@@ -187,8 +189,8 @@ $result = pg_query($conn, $query);
         }
 
         th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #ECEBFF;
+            color: #3F3D56;
             font-weight: 600;
             text-transform: uppercase;
             font-size: 12px;
@@ -215,6 +217,8 @@ $result = pg_query($conn, $query);
         }
 
         .badge {
+            background: #EEF2FF;
+            color: #4338CA;
             display: inline-block;
             padding: 6px 12px;
             border-radius: 20px;
@@ -262,14 +266,12 @@ $result = pg_query($conn, $query);
         }
 
         .btn-detail {
-            background-color: #2196F3;
-            color: white;
+            background-color: #667eea;
         }
 
         .btn-detail:hover {
-            background-color: #0b7dda;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
+            background-color: #5568d3;
+            box-shadow: none;
         }
 
         .btn-delete {
@@ -572,23 +574,26 @@ $result = pg_query($conn, $query);
         }
 
         .btn-admin {
-            background-color: #751f43ff;
-            color: #fff;
+            background: transparent;
+            color: #667eea;
+            border: 1.5px solid #667eea;
         }
 
         .btn-admin:hover {
-            background-color: #a0617bff;
-            box-shadow: 0 5px 15px rgba(80, 99, 182, 0.3);
+            background: #667eea;
+            color: white;
         }
 
         .btn-logout {
-            background-color: #751f43ff;
-            color: #fff;
+            background: transparent;
+            color: #555;
+            border: 1.5px solid #ccc;
         }
 
         .btn-logout:hover {
-            background-color: #a0617bff;
-            box-shadow: 0 5px 15px rgba(80, 99, 182, 0.3);
+            background: #667eea;
+            color: white;
+            box-shadow: none;
         }
 
         /* CSS Modal Login */
@@ -709,31 +714,29 @@ $result = pg_query($conn, $query);
         }
 
         th.custom-header {
-            background: #8662daff !important;
+            background: #ECEBFF !important;
         }
 
         /* Button Verifikasi */
         .btn-verify {
-            background: #4CAF50;
-            color: #fff;
+            background: #E6F4EA;
+            color: #2E7D32;
         }
 
         .btn-verify:hover {
-            background: #43a047;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+            background: #C8E6C9;
+            box-shadow: none;
         }
 
         /* Button Batal Verifikasi */
         .btn-unverify {
-            background: #ff9800;
-            color: #fff;
+            background: #FFF3E0;
+            color: #EF6C00;
         }
 
         .btn-unverify:hover {
-            background: #fb8c00;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+            background: #FFE0B2;
+            box-shadow: none;
         }
     </style>
 </head>
