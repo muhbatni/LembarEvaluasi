@@ -8,14 +8,6 @@
 /storage/logs/
 /public/uploads/
 
-# Dependencies / build
-/vendor/
-/node_modules/
-
-# OS / editor
-.DS_Store
-Thumbs.db
-
 # Don't commit database dumps unless you really want to
 /database/
 
