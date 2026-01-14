@@ -1,6 +1,5 @@
-evaluasi_pelatihan.sql
+/database/
+/tools/
 koneksi.php
 uploads/
 *.env
-hash.php
-db.txt
