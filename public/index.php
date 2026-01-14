@@ -28,6 +28,8 @@ $routes = [
     //login routes
     'admin_login' => BASE_PATH . '/src/page/admin_login.php',
     'logout'      => BASE_PATH . '/src/actions/logout.php',
+    //controller routes 
+    'proses' => BASE_PATH . '/src/actions/proses.php',
 ];
 
 if ($view !== 'home') {

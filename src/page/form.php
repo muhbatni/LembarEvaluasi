@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <?php
-include 'koneksi.php';
+require_once BASE_PATH . '/src/includes/koneksi.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $is_verified = false;
 
 if ($id > 0) {
-    $q = pg_query($conn, "SELECT is_verified FROM evaluasi WHERE id = $id");
+    $q = pg_query_params($conn, "SELECT is_verified FROM evaluasi WHERE id = $1", [$id]);
     if ($q && pg_num_rows($q) > 0) {
         $d = pg_fetch_assoc($q);
         $is_verified = ($d['is_verified'] === 't');
@@ -485,7 +485,7 @@ if ($id > 0) {
             <h1>Lembar Evaluasi Pelatihan</h1>
         </div>
 
-        <form action="proses.php" method="POST" enctype="multipart/form-data" novalidate>
+        <form action="index.php?p=proses" method="POST" enctype="multipart/form-data" novalidate>
             <div class="form-group">
                 <label>Judul Pelatihan / Workshop:</label>
                 <input type="text" name="judul_pelatihan" required class="essay">
@@ -925,6 +925,32 @@ if ($id > 0) {
                         <p><strong>Mengetahui,</strong></p>
 
                         <p class="ttd-title">
+                            KETUA TEAM
+                        </p>
+
+                        <div class="ttd-fill">
+                            <img id="previewKetua" class="ttd-image" style="display:none;">
+                        </div>
+
+                        <div class="ttd-upload">
+                            <label for="ttdKetua">Upload TTD Ketua</label>
+                            <input type="file" id="ttdKetua" name="ttdKetua" required
+                                accept="image/png,image/jpeg"
+                                onchange="previewTTD(this, 'previewKetua')">
+                        </div>
+
+                        <input type="text" name="ketua" class="line-input" placeholder="Nama Lengkap" required>
+
+                        <div class="nip-row">
+                            <span>NIP.</span>
+                            <input type="text" name="nipKetua" required class="essay">
+                        </div>
+                    </div>
+
+                    <div class="ttd-box">
+                        <p><strong>Menyetujui,</strong></p>
+
+                        <p class="ttd-title">
                             KEPALA SUB BAGIAN<br>
                             TATA USAHA
                         </p>
@@ -945,32 +971,6 @@ if ($id > 0) {
                         <div class="nip-row">
                             <span>NIP.</span>
                             <input type="text" name="nipKepala" required class="essay">
-                        </div>
-                    </div>
-
-                    <div class="ttd-box">
-                        <p><strong>Menyetujui,</strong></p>
-
-                        <p class="ttd-title">
-                            KETUA TEAM
-                        </p>
-
-                        <div class="ttd-fill">
-                            <img id="previewKetua" class="ttd-image" style="display:none;">
-                        </div>
-
-                        <div class="ttd-upload">
-                            <label for="ttdKetua">Upload TTD Ketua</label>
-                            <input type="file" id="ttdKetua" name="ttdKetua" required
-                                accept="image/png,image/jpeg"
-                                onchange="previewTTD(this, 'previewKetua')">
-                        </div>
-
-                        <input type="text" name="ketua" class="line-input" placeholder="Nama Lengkap" required>
-
-                        <div class="nip-row">
-                            <span>NIP.</span>
-                            <input type="text" name="nipKetua" required class="essay">
                         </div>
                     </div>
 

@@ -1,7 +1,8 @@
 <?php
 date_default_timezone_set('Asia/Jakarta'); // Set timezone to Jakarta
-require_once 'session.php'; // session management
-include 'koneksi.php';
+
+require_once BASE_PATH . '/src/includes/session.php';
+require_once BASE_PATH . '/src/includes/koneksi.php';
 
 function uploadByRole($file, $baseDir, $prefix, $allowedExt, $maxSize)
 {
@@ -38,8 +39,11 @@ function uploadByRole($file, $baseDir, $prefix, $allowedExt, $maxSize)
         die("Gagal upload file");
     }
 
-    // simpan RELATIF dari uploads/
-    return str_replace('uploads/', '', $targetPath);
+    // simpan RELATIF dari storage/uploads/
+    $targetPath = str_replace('\\', '/', $targetPath);
+    $base = str_replace('\\', '/', BASE_PATH . '/storage/uploads/');
+
+    return ltrim(str_replace($base, '', $targetPath), '/');
 }
 
 
@@ -61,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Upload Sertifikasi
     $sertifikasi = uploadByRole(
         $_FILES['sertifikasi'],
-        'uploads/sertifikat',
+        BASE_PATH .'/storage/uploads/sertifikat',
         'sertifikat',
         ['jpg', 'jpeg', 'png', 'pdf'],
         5 * 1024 * 1024
@@ -114,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // ===== UPLOAD TTD =====
     $ttd_pegawai = uploadByRole(
         $_FILES['ttdPegawai'],
-        'uploads/ttd/pegawai',
+        BASE_PATH .'/storage/uploads/ttd/pegawai',
         'ttd_pegawai',
         ['jpg', 'jpeg', 'png'],
         2 * 1024 * 1024
@@ -122,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $ttd_kepala = uploadByRole(
         $_FILES['ttdKepala'],
-        'uploads/ttd/kepala',
+        BASE_PATH .'/storage/uploads/ttd/kepala',
         'ttd_kepala',
         ['jpg', 'jpeg', 'png'],
         2 * 1024 * 1024
@@ -130,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $ttd_ketua = uploadByRole(
         $_FILES['ttdKetua'],
-        'uploads/ttd/ketua',
+        '/storage/uploads/ttd/ketua',
         'ttd_ketua',
         ['jpg', 'jpeg', 'png'],
         2 * 1024 * 1024
@@ -232,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class='success-icon'>✓</div>
                 <h1>Berhasil!</h1>
                 <p>Data evaluasi pelatihan telah berhasil disimpan ke database.</p>
-                <a href='form.php' class='btn'>Isi Form Lagi</a>
+                <a href='index.php?p=form' class='btn'>Isi Form Lagi</a>
                 <a href='index.php' class='btn btn-secondary'>Lihat Data</a>
             </div>
         </body>
@@ -308,7 +312,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h1>Gagal!</h1>
                 <p>Terjadi kesalahan saat menyimpan data.</p>
                 <div class='error-detail'>" . pg_last_error($conn) . "</div>
-                <a href='form.php' class='btn'>Kembali ke Form</a>
+                <a href='index.php?p=form' class='btn'>Kembali ke Form</a>
             </div>
         </body>
         </html>";
