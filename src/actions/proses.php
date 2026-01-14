@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $ttd_ketua = uploadByRole(
         $_FILES['ttdKetua'],
-        '/storage/uploads/ttd/ketua',
+        BASE_PATH .'/storage/uploads/ttd/ketua',
         'ttd_ketua',
         ['jpg', 'jpeg', 'png'],
         2 * 1024 * 1024
