@@ -1,5 +1,5 @@
 <?php
-include 'koneksi.php';
+require_once BASE_PATH . '/src/includes/koneksi.php';
 
 if (!isset($_GET['id'])) {
     header('Location: index.php');
@@ -508,11 +508,11 @@ function getNilaiText($nilai)
                     $ext = strtolower(pathinfo($data['sertifikasi'], PATHINFO_EXTENSION));
                     if (in_array($ext, ['jpg', 'jpeg', 'png'])):
                     ?>
-                        <br><img src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>" alt="Sertifikasi"
+                        <br><img src="file.php?path=<?= urlencode($data['sertifikasi']) ?>" alt="Sertifikasi"
                             class="certificate-img">
                     <?php else: ?>
                         <iframe
-                            src="uploads/<?= htmlspecialchars($data['sertifikasi']) ?>"
+                            src="file.php?path=<?= urlencode($data['sertifikasi']) ?>"
                             width="100%"
                             height="400"
                             style="border:1px solid #ccc; border-radius:6px; margin-top:10px;">
@@ -792,13 +792,12 @@ function getNilaiText($nilai)
                 <div class="signature-grid">
                     <div class="signature-box">
                         <div class="signature-title">Mengetahui,</div>
-                        <div style="font-weight: bold; font-size: 12px; margin: 8px 0;">
-                            PEGAWAI YANG MELAKSANAKAN<br>
-                            PENGEMBANGAN KOMPETENSI
+                        <div style="font-weight:bold;font-size:12px;margin:8px 0;">
+                            PEGAWAI YANG MELAKSANAKAN<br>PENGEMBANGAN KOMPETENSI
                         </div>
                         <div class="signature-space">
                             <?php if (!empty($data['ttd_pegawai'])): ?>
-                                <img src="uploads/<?= htmlspecialchars($data['ttd_pegawai']) ?>" class="signature-img">
+                                <img src="file.php?path=<?= urlencode($data['ttd_pegawai']) ?>" class="signature-img">
                             <?php endif; ?>
                         </div>
                         <div class="signature-name"><?= htmlspecialchars($data['nama_pegawai']) ?></div>
@@ -807,31 +806,31 @@ function getNilaiText($nilai)
 
                     <div class="signature-box">
                         <div class="signature-title">Mengetahui,</div>
-                        <div style="font-weight: bold; font-size: 12px; margin: 8px 0;">
-                            KEPALA SUB BAGIAN<br>
-                            TATA USAHA
-                        </div>
-                        <div class="signature-space">
-                            <?php if (!empty($data['ttd_kepala'])): ?>
-                                <img src="uploads/<?= htmlspecialchars($data['ttd_kepala']) ?>" class="signature-img">
-                            <?php endif; ?>
-                        </div>
-                        <div class="signature-name"><?= htmlspecialchars($data['nama_kepala']) ?></div>
-                        <div class="signature-nip">NIP. <?= htmlspecialchars($data['nip_kepala']) ?></div>
-                    </div>
-
-                    <div class="signature-box">
-                        <div class="signature-title">Menyetujui,</div>
-                        <div style="font-weight: bold; font-size: 12px; margin: 8px 0;">
+                        <div style="font-weight:bold;font-size:12px;margin:8px 0;">
                             KETUA TEAM
                         </div>
                         <div class="signature-space">
                             <?php if (!empty($data['ttd_ketua'])): ?>
-                                <img src="uploads/<?= htmlspecialchars($data['ttd_ketua']) ?>" class="signature-img">
+                                <img src="file.php?path=<?= urlencode($data['ttd_ketua']) ?>" class="signature-img">
                             <?php endif; ?>
                         </div>
                         <div class="signature-name"><?= htmlspecialchars($data['nama_ketua']) ?></div>
                         <div class="signature-nip">NIP. <?= htmlspecialchars($data['nip_ketua']) ?></div>
+                    </div>
+
+                    <!-- KEPALA = MENYETUJUI -->
+                    <div class="signature-box">
+                        <div class="signature-title">Menyetujui,</div>
+                        <div style="font-weight:bold;font-size:12px;margin:8px 0;">
+                            KEPALA SUB BAGIAN<br>TATA USAHA
+                        </div>
+                        <div class="signature-space">
+                            <?php if (!empty($data['ttd_kepala'])): ?>
+                                <img src="file.php?path=<?= urlencode($data['ttd_kepala']) ?>" class="signature-img">
+                            <?php endif; ?>
+                        </div>
+                        <div class="signature-name"><?= htmlspecialchars($data['nama_kepala']) ?></div>
+                        <div class="signature-nip">NIP. <?= htmlspecialchars($data['nip_kepala']) ?></div>
                     </div>
                 </div>
             </div>
