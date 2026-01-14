@@ -30,8 +30,9 @@ $routes = [
     'logout'      => BASE_PATH . '/src/actions/logout.php',
     //controller routes 
     'proses' => BASE_PATH . '/src/actions/proses.php',
-    //verifikasi
+    //action buttons
     'verifikasi' => BASE_PATH . '/src/actions/verifikasi.php',
+    'delete' => BASE_PATH . '/src/actions/delete.php',
 ];
 
 if ($view !== 'home') {
@@ -960,7 +961,7 @@ $offset = ($page - 1) * $limit;
                                             </a>
                                         <?php endif; ?>
                                         <!-- Tombol Hapus -->
-                                        <button
+                                        <button type="button"
                                             class="action-btn btn-delete"
                                             onclick="openDeleteModal(
                                             <?= $row['id'] ?>,
@@ -1172,7 +1173,7 @@ $offset = ($page - 1) * $limit;
         function openDeleteModal(id, judul, nama) {
             document.getElementById('deleteJudul').innerText = judul;
             document.getElementById('deleteNama').innerText = 'Oleh: ' + nama;
-            document.getElementById('deleteConfirmBtn').href = 'delete.php?id=' + id;
+            document.getElementById('deleteConfirmBtn').href = 'index.php?p=delete&id=' + id;
             document.getElementById('deleteModal').style.display = 'block';
         }
 
