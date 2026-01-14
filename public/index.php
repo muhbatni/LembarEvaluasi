@@ -17,27 +17,64 @@ if (isset($_SESSION['admin'])) {
     $_SESSION['LAST_ACTIVITY'] = time();
 }
 
+// routing view pages
+$view = $_GET['p'] ?? 'home';
+
+$routes = [
+    'home'   => null, // handled below
+    'form'   => BASE_PATH . '/src/page/form.php',
+    'detail' => BASE_PATH . '/src/page/detail.php',
+    'grafik' => BASE_PATH . '/src/page/grafik.php',
+    //login routes
+    'admin_login' => BASE_PATH . '/src/page/admin_login.php',
+    'logout'      => BASE_PATH . '/src/actions/logout.php',
+];
+
+if ($view !== 'home') {
+    if (!isset($routes[$view])) {
+        http_response_code(404);
+        exit('Page not found');
+    }
+    require $routes[$view];
+    exit;
+}
+
 // Pagination
 $limit = 5; // Jumlah data per halaman
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Search functionality
-$search = isset($_GET['search']) ? pg_escape_string($conn, $_GET['search']) : '';
-$where = "";
-if ($search != '') {
-    $where = "WHERE judul_pelatihan ILIKE '%$search%' OR nama ILIKE '%$search%' OR waktu ILIKE '%$search%'";
+$search = trim($_GET['search'] ?? '');
+
+$params = [];
+$where  = '';
+if ($search !== '') {
+    $where = "WHERE judul_pelatihan ILIKE $1 OR nama ILIKE $1 OR waktu ILIKE $1";
+    $params[] = "%{$search}%";
 }
 
 // Count total records
-$count_query = "SELECT COUNT(*) as total FROM evaluasi $where";
-$count_result = pg_query($conn, $count_query);
-$total_records = pg_fetch_assoc($count_result)['total'];
-$total_pages = ceil($total_records / $limit);
+$count_sql = "SELECT COUNT(*) as total FROM evaluasi $where";
+$count_result = ($search !== '')
+    ? pg_query_params($conn, $count_sql, $params)
+    : pg_query($conn, $count_sql);
+
+$total_records = (int) pg_fetch_assoc($count_result)['total'];
+$total_pages = (int) ceil($total_records / $limit);
 
 // Get data with pagination
-$query = "SELECT * FROM evaluasi $where ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
-$result = pg_query($conn, $query);
+if ($search !== '') {
+    $sql = "SELECT * FROM evaluasi $where ORDER BY created_at DESC LIMIT $2 OFFSET $3";
+    $result = pg_query_params($conn, $sql, [$params[0], $limit, $offset]);
+} else {
+    $sql = "SELECT * FROM evaluasi ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
+    $result = pg_query($conn, $sql);
+}
+
+// Get data with pagination
+$page = (isset($_GET['page']) && (int)$_GET['page'] > 0) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
 ?>
 
 <!DOCTYPE html>
@@ -777,7 +814,7 @@ $result = pg_query($conn, $query);
 
                 <!-- BARIS ATAS -->
                 <div class="admin-top">
-                    <a href="form.php" class="btn">
+                    <a href="index.php?p=form" class="btn">
                         + Tambah Evaluasi
                     </a>
 
@@ -785,7 +822,7 @@ $result = pg_query($conn, $query);
                         <span class="btn btn-admin">
                             👔 <?= $_SESSION['admin'] ?>
                         </span>
-                        <a href="logout.php" class="btn btn-logout">
+                        <a href="index.php?p=logout" class="btn btn-logout">
                             Logout
                         </a>
                     <?php else: ?>
@@ -798,7 +835,7 @@ $result = pg_query($conn, $query);
                 <!-- BARIS BAWAH -->
                 <?php if (isset($_SESSION['admin'])): ?>
                     <div class="admin-bottom">
-                        <a href="grafik.php" class="btn btn-secondary">
+                        <a href="index.php?p=grafik" class="btn btn-secondary">
                             📊 Grafik
                         </a>
 
@@ -876,7 +913,7 @@ $result = pg_query($conn, $query);
                                 <td><?= htmlspecialchars($row['waktu']) ?></td>
                                 <td style="text-align: center;">
                                     <?php if ($row['sertifikasi']): ?>
-                                        <a href="uploads/<?= htmlspecialchars($row['sertifikasi']) ?>" target="_blank"
+                                        <a href="file.php?path=<?= urlencode($row['sertifikasi']) ?>" target="_blank"
                                             class="file-link" title="Lihat Sertifikat">
                                             📄 Lihat
                                         </a>
@@ -902,7 +939,7 @@ $result = pg_query($conn, $query);
                                 </td>
                                 <td style="text-align: center;">
                                     <!-- Tombol Detail (SEMUA USER) -->
-                                    <a href="detail.php?id=<?= $row['id'] ?>" class="action-btn btn-detail">
+                                    <a href="index.php?p=detail&id=<?= (int)$row['id'] ?>" class="action-btn btn-detail">
                                         📋 Detail
                                     </a>
                                     <?php if (isset($_SESSION['admin'])): ?>
@@ -979,7 +1016,7 @@ $result = pg_query($conn, $query);
                     <a href="index.php" class="btn" style="margin-top: 20px;">Lihat Semua Data</a>
                 <?php else: ?>
                     <p>Mulai dengan mengisi form evaluasi pelatihan.</p>
-                    <a href="form.php" class="btn" style="margin-top: 20px;">Isi Form Evaluasi</a>
+                    <a href="index.php?p=form" class="btn" style="margin-top: 20px;">Isi Form Evaluasi</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
@@ -1087,7 +1124,7 @@ $result = pg_query($conn, $query);
             const username = document.getElementById('adminUser').value;
             const password = document.getElementById('adminPass').value;
 
-            fetch('admin_login.php?nocache=' + Date.now(), {
+            fetch('index.php?p=admin_login&nocache=' + Date.now(), {
                     method: 'POST',
                     credentials: 'include',
                     headers: {

@@ -1,5 +1,5 @@
 <?php
-require_once 'session.php';
+require_once BASE_PATH . '/src/includes/session.php';
 
 $_SESSION = [];
 
