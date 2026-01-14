@@ -1,5 +1,23 @@
-/database/
-/tools/
-koneksi.php
-uploads/
+# Sensitive / environment
+.env
 *.env
+/src/includes/koneksi.php
+
+# Uploads & runtime
+/storage/uploads/
+/storage/logs/
+/public/uploads/
+
+# Dependencies / build
+/vendor/
+/node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Don't commit database dumps unless you really want to
+/database/
+
+# Optional tools
+/tools/
