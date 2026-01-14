@@ -1,6 +1,10 @@
 <?php
 date_default_timezone_set('Asia/Jakarta');
-require_once 'session.php';
+
+define('BASE_PATH', dirname(__DIR__));
+
+require_once BASE_PATH . '/src/includes/session.php';
+require_once BASE_PATH . '/src/includes/koneksi.php';
 
 // auto logout 1 hari
 if (isset($_SESSION['admin'])) {
@@ -12,8 +16,6 @@ if (isset($_SESSION['admin'])) {
     }
     $_SESSION['LAST_ACTIVITY'] = time();
 }
-
-include 'koneksi.php';
 
 // Pagination
 $limit = 5; // Jumlah data per halaman
