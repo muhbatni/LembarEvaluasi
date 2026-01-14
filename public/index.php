@@ -30,6 +30,8 @@ $routes = [
     'logout'      => BASE_PATH . '/src/actions/logout.php',
     //controller routes 
     'proses' => BASE_PATH . '/src/actions/proses.php',
+    //verifikasi
+    'verifikasi' => BASE_PATH . '/src/actions/verifikasi.php',
 ];
 
 if ($view !== 'home') {
@@ -947,12 +949,12 @@ $offset = ($page - 1) * $limit;
                                     <?php if (isset($_SESSION['admin'])): ?>
                                         <!-- Tombol Verifikasi -->
                                         <?php if ($row['is_verified'] === 't'): ?>
-                                            <a href="verifikasi.php?id=<?= $row['id'] ?>&action=unverify"
+                                            <a href="index.php?p=verifikasi&id=<?= (int)$row['id'] ?>&action=unverify"
                                                 class="action-btn btn-unverify">
                                                 ❌ Batal
                                             </a>
                                         <?php else: ?>
-                                            <a href="verifikasi.php?id=<?= $row['id'] ?>&action=verify"
+                                            <a href="index.php?p=verifikasi&id=<?= (int)$row['id'] ?>&action=verify"
                                                 class="action-btn btn-verify">
                                                 ✅ Verifikasi
                                             </a>
