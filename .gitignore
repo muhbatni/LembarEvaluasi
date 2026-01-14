@@ -5,8 +5,6 @@
 
 # Uploads & runtime
 /storage/uploads/
-/storage/logs/
-/public/uploads/
 
 # Don't commit database dumps unless you really want to
 /database/
