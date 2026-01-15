@@ -31,8 +31,9 @@ $routes = [
     //controller routes 
     'proses' => BASE_PATH . '/src/actions/proses.php',
     //action buttons
-    'verifikasi' => BASE_PATH . '/src/actions/verifikasi.php',
     'delete' => BASE_PATH . '/src/actions/delete.php',
+    'export_csv' => BASE_PATH . '/src/actions/export_csv.php',
+    'verifikasi' => BASE_PATH . '/src/actions/verifikasi.php',
 ];
 
 if ($view !== 'home') {
