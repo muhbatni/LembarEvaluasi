@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Jakarta');
-
+define('BASE_URL', '/LembarEvaluasi/public');
 define('BASE_PATH', dirname(__DIR__));
 
 require_once BASE_PATH . '/src/includes/session.php';

@@ -455,6 +455,14 @@ function getNilaiText($nilai)
             object-fit: contain;
             margin-bottom: 8px;
         }
+
+        #pdf-preview canvas {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #2196F3;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -511,22 +519,34 @@ function getNilaiText($nilai)
             </div>
 
             <!-- Certificate -->
-            <?php if ($data['sertifikasi']): ?>
+            <?php if (!empty($data['sertifikasi'])): ?>
                 <div class="certificate-box">
                     <strong>📄 Sertifikat</strong>
+
                     <?php
                     $ext = strtolower(pathinfo($data['sertifikasi'], PATHINFO_EXTENSION));
-                    if (in_array($ext, ['jpg', 'jpeg', 'png'])):
                     ?>
-                        <br><img src="file.php?path=<?= urlencode($data['sertifikasi']) ?>" alt="Sertifikasi"
+
+                    <?php if (in_array($ext, ['jpg', 'jpeg', 'png'])): ?>
+
+                        <br>
+                        <img src="file.php?path=<?= urlencode($data['sertifikasi']) ?>"
+                            alt="Sertifikasi"
                             class="certificate-img">
+
+                    <?php elseif ($ext === 'pdf'): ?>
+
+                        <div id="pdf-preview"
+                            data-pdf-url="<?= BASE_URL ?>/file.php?path=<?= urlencode($data['sertifikasi']) ?>"
+                            style="margin-top:10px;">
+                        </div>
+
                     <?php else: ?>
-                        <iframe
-                            src="file.php?path=<?= urlencode($data['sertifikasi']) ?>"
-                            width="100%"
-                            height="400"
-                            style="border:1px solid #ccc; border-radius:6px; margin-top:10px;">
-                        </iframe>
+
+                        <div class="text-empty" style="margin-top:10px;">
+                            Format sertifikat tidak didukung.
+                        </div>
+
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
@@ -851,6 +871,56 @@ function getNilaiText($nilai)
             <a href="javascript:window.print()" class="btn btn-print">🖨️ Cetak</a>
         </div>
     </div>
+
+    <script type="module">
+        import * as pdfjsLib from "<?= BASE_URL ?>/assets/pdfjs/pdf.mjs";
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            "<?= BASE_URL ?>/assets/pdfjs/pdf.worker.mjs";
+
+        const wrap = document.getElementById("pdf-preview");
+
+        if (!wrap) {
+            console.warn("pdf-preview tidak ditemukan, skip pdfjs");
+        } else {
+            const url = wrap.dataset.pdfUrl;
+
+            wrap.innerHTML = "Loading PDF...";
+            console.log("PDF url:", url);
+
+            pdfjsLib.getDocument(url).promise
+                .then(async (pdf) => {
+                    const page = await pdf.getPage(1);
+                    const viewport = page.getViewport({
+                        scale: 1.6
+                    });
+
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+
+                    canvas.width = Math.floor(viewport.width);
+                    canvas.height = Math.floor(viewport.height);
+
+                    canvas.style.width = "100%";
+                    canvas.style.height = "auto";
+                    canvas.style.border = "2px solid #2196F3";
+                    canvas.style.borderRadius = "6px";
+
+                    wrap.innerHTML = "";
+                    wrap.appendChild(canvas);
+
+                    await page.render({
+                        canvasContext: ctx,
+                        viewport
+                    }).promise;
+                })
+                .catch(err => {
+                    wrap.innerHTML =
+                        `<div style="color:red">Gagal preview PDF: ${err.message}</div>`;
+                    console.error("PDFJS error:", err);
+                });
+        } //pdf-preview
+    </script>
 </body>
 
 </html>
