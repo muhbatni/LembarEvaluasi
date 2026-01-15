@@ -283,11 +283,22 @@ function getNilaiText($nilai)
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 90px;
+            transform: translate(-50%, -50%) rotate(-25deg);
+
+            padding: 30px 60px;
+
+            font-size: 80px;
             font-weight: 900;
-            color: rgba(76, 175, 80, 0.15);
-            letter-spacing: 10px;
+            letter-spacing: 8px;
+
+            color: rgba(220, 53, 69, 0.25);
+            /* merah */
+            border: 8px solid rgba(220, 53, 69, 0.25);
+            /* kotak merah */
+            border-radius: 12px;
+
+            text-transform: uppercase;
+
             z-index: 999;
             pointer-events: none;
             user-select: none;
@@ -311,8 +322,9 @@ function getNilaiText($nilai)
             }
 
             .watermark {
-                color: rgba(76, 175, 80, 0.25);
-                font-size: 110px;
+                color: rgba(220, 53, 69, 0.35);
+                border-color: rgba(220, 53, 69, 0.35);
+                font-size: 95px;
             }
 
             .page-break {
