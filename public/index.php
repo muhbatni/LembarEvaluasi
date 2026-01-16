@@ -845,7 +845,7 @@ $offset = ($page - 1) * $limit;
                             📊 Grafik
                         </a>
 
-                        <a href="export_csv.php<?= $search ? '?search=' . urlencode($search) : '' ?>"
+                        <a href="index.php?p=export_csv<?= $search ? '&search=' . urlencode($search) : '' ?>"
                             class="btn btn-primary">
                             📥 Export CSV
                         </a>
