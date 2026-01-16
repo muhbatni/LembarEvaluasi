@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('Asia/Jakarta');
-require_once 'session.php';
-include 'koneksi.php';
+require_once BASE_PATH . '/src/includes/session.php';
+require_once BASE_PATH . '/src/includes/koneksi.php';
 
 // Hanya admin
 if (!isset($_SESSION['admin'])) {
