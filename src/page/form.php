@@ -548,7 +548,26 @@ if ($id > 0) {
                 <div class="info-grid">
                     <div class="form-group">
                         <label>Waktu / Tanggal Pelaksanaan:</label>
-                        <input type="text" name="waktu" required class="essay" placeholder="Contoh: 10-12 Januari 2025">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                            <input type="number" id="waktu_tgl" name="waktu_tgl" required class="essay" placeholder="Tanggal" min="1" max="31">
+                            <select id="waktu_bln" name="waktu_bln" required class="essay">
+                                <option value="">Bulan</option>
+                                <option value="Januari">Januari</option>
+                                <option value="Februari">Februari</option>
+                                <option value="Maret">Maret</option>
+                                <option value="April">April</option>
+                                <option value="Mei">Mei</option>
+                                <option value="Juni">Juni</option>
+                                <option value="Juli">Juli</option>
+                                <option value="Agustus">Agustus</option>
+                                <option value="September">September</option>
+                                <option value="Oktober">Oktober</option>
+                                <option value="November">November</option>
+                                <option value="Desember">Desember</option>
+                            </select>
+                            <input type="number" id="waktu_thn" name="waktu_thn" required class="essay" placeholder="Tahun" min="1900" max="2100">
+                        </div>
+
                     </div>
 
                     <div class="form-group">
@@ -1132,6 +1151,31 @@ if ($id > 0) {
                 reader.readAsDataURL(file);
             }
         }
+    </script>
+    <script>
+        // gabung input waktu ke hidden field
+        const formEl = document.querySelector('form');
+
+        function buildWaktu() {
+            const tgl = document.getElementById('waktu_tgl').value;
+            const bln = document.getElementById('waktu_bln').value;
+            const thn = document.getElementById('waktu_thn').value;
+
+            document.getElementById('waktu').value = (tgl && bln && thn) ?
+                `${tgl} ${bln} ${thn}` :
+                '';
+        }
+
+        // update hidden setiap kali user ubah field
+        ['waktu_tgl', 'waktu_bln', 'waktu_thn'].forEach(id => {
+            document.getElementById(id).addEventListener('input', buildWaktu);
+            document.getElementById(id).addEventListener('change', buildWaktu);
+        });
+
+        // pastikan sebelum submit sudah tergabung
+        formEl.addEventListener('submit', function() {
+            buildWaktu();
+        });
     </script>
 </body>
 

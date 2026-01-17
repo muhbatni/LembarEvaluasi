@@ -57,7 +57,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nip = pg_escape_string($conn, $_POST['nip']);
     $jabatan = pg_escape_string($conn, $_POST['jabatan']);
     $unit_kerja = pg_escape_string($conn, $_POST['unit_kerja']);
-    $waktu = pg_escape_string($conn, $_POST['waktu']);
+    // ambil waktu gabungan (dari hidden "waktu" atau gabung dari 3 field)
+    $waktuRaw = trim($_POST['waktu'] ?? '');
+    if ($waktuRaw === '') {
+        $tgl = trim($_POST['waktu_tgl'] ?? '');
+        $bln = trim($_POST['waktu_bln'] ?? '');
+        $thn = trim($_POST['waktu_thn'] ?? '');
+        if ($tgl !== '' && $bln !== '' && $thn !== '') {
+            $waktuRaw = $tgl . ' ' . $bln . ' ' . $thn; // contoh: 10 Januari 2025
+        }
+    }
+    // baru di-escape untuk query
+    $waktu = pg_escape_string($conn, $waktuRaw);
     $jam_pelajaran = (int)$_POST['jam_pelajaran'];
     $jenis_kompetensi = pg_escape_string($conn, $_POST['jenis_kompetensi']);
     $penyelenggara = pg_escape_string($conn, $_POST['penyelenggara']);
@@ -65,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Upload Sertifikasi
     $sertifikasi = uploadByRole(
         $_FILES['sertifikasi'],
-        BASE_PATH .'/storage/uploads/sertifikat',
+        BASE_PATH . '/storage/uploads/sertifikat',
         'sertifikat',
         ['jpg', 'jpeg', 'png', 'pdf'],
         5 * 1024 * 1024
@@ -118,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // ===== UPLOAD TTD =====
     $ttd_pegawai = uploadByRole(
         $_FILES['ttdPegawai'],
-        BASE_PATH .'/storage/uploads/ttd/pegawai',
+        BASE_PATH . '/storage/uploads/ttd/pegawai',
         'ttd_pegawai',
         ['jpg', 'jpeg', 'png'],
         2 * 1024 * 1024
@@ -126,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $ttd_kepala = uploadByRole(
         $_FILES['ttdKepala'],
-        BASE_PATH .'/storage/uploads/ttd/kepala',
+        BASE_PATH . '/storage/uploads/ttd/kepala',
         'ttd_kepala',
         ['jpg', 'jpeg', 'png'],
         2 * 1024 * 1024
@@ -134,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $ttd_ketua = uploadByRole(
         $_FILES['ttdKetua'],
-        BASE_PATH .'/storage/uploads/ttd/ketua',
+        BASE_PATH . '/storage/uploads/ttd/ketua',
         'ttd_ketua',
         ['jpg', 'jpeg', 'png'],
         2 * 1024 * 1024
