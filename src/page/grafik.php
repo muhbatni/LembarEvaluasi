@@ -6,13 +6,7 @@ if (!isset($_SESSION['admin'])) {
     die('Akses ditolak');
 }
 
-/**
- * FILTER (bisa kombinasi)
- * - year: "2026"
- * - month: "1".."12" (diambil dari DB sesuai year)
- * - nama: string (dropdown dari DB)
- * - judul: string (dropdown dari DB)
- */
+// FILTER (bisa kombinasi)
 $year  = $_GET['year']  ?? '';
 $month = $_GET['month'] ?? '';
 $nama  = $_GET['nama']  ?? '';
@@ -21,33 +15,49 @@ $judul = $_GET['judul'] ?? '';
 // Fungsi konversi string waktu ke date (pgadmin varchar ke date)
 $waktuSql = "
 to_date(
-  (
-    (regexp_match(waktu, '([0-9]{1,2})\\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\\s+([0-9]{4})'))[1]
-    || ' ' ||
-    case (regexp_match(waktu, '([0-9]{1,2})\\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\\s+([0-9]{4})'))[2]
-      when 'Januari' then '01'
-      when 'Februari' then '02'
-      when 'Maret' then '03'
-      when 'April' then '04'
-      when 'Mei' then '05'
-      when 'Juni' then '06'
-      when 'Juli' then '07'
-      when 'Agustus' then '08'
-      when 'September' then '09'
-      when 'Oktober' then '10'
-      when 'November' then '11'
-      when 'Desember' then '12'
-    end
-    || ' ' ||
-    (regexp_match(waktu, '([0-9]{1,2})\\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\\s+([0-9]{4})'))[3]
+  regexp_replace(
+    regexp_replace(
+      regexp_replace(
+        regexp_replace(
+          regexp_replace(
+            regexp_replace(
+              regexp_replace(
+                regexp_replace(
+                  regexp_replace(
+                    regexp_replace(
+                      regexp_replace(
+                        lower(waktu),
+                        '(januari|jan)', '01', 'gi'
+                      ),
+                      '(februari|feb)', '02', 'gi'
+                    ),
+                    '(maret|mar)', '03', 'gi'
+                  ),
+                  '(april|apr)', '04', 'gi'
+                ),
+                '(mei)', '05', 'gi'
+              ),
+              '(juni|jun)', '06', 'gi'
+            ),
+            '(juli|jul)', '07', 'gi'
+          ),
+          '(agustus|ags|agu)', '08', 'gi'
+        ),
+        '(september|sep)', '09', 'gi'
+      ),
+      '(oktober|okt)', '10', 'gi'
+    ),
+    '(november|nov)', '11', 'gi'
   ),
   'DD MM YYYY'
 )
 ";
 
 //validasi format waktu
-$validWaktu = "waktu ~ '([0-9]{1,2})\\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\\s+([0-9]{4})'";
-
+$validWaktu = "
+lower(waktu) ~
+'([0-9]{1,2})\\s+(jan|januari|feb|februari|mar|maret|apr|april|mei|jun|juni|jul|juli|ags|agustus|agu|sep|september|okt|oktober|nov|november|des|desember)\\s+([0-9]{4})'
+";
 
 // 1) Dropdown Tahun (softcode dari DB)
 
