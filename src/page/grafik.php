@@ -64,7 +64,6 @@ to_date(
 $validWaktu = "waktu ~ '[0-9]{1,2} (Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember) [0-9]{4}'";
 
 // 1) Dropdown Tahun (softcode dari DB)
-
 $listYear = [];
 $qYear = "SELECT DISTINCT EXTRACT(YEAR FROM $waktuSql)::int AS y
           FROM evaluasi
@@ -76,10 +75,6 @@ while ($row = pg_fetch_assoc($rYear)) {
 }
 
 // 2) Dropdown Bulan (tergantung Tahun)
-// - kalau $year dipilih: hanya bulan yang ada di tahun tsb
-// - kalau $year kosong: bisa tampil semua bulan yang ada di DB (opsional)
-//   di sini saya buat: kalau year kosong -> bulan kosong (user pilih tahun dulu)
-// ------------------------
 $listMonth = [];
 if ($year !== '') {
     $qMonth = "SELECT DISTINCT EXTRACT(MONTH FROM $waktuSql)::int AS m
@@ -93,15 +88,12 @@ if ($year !== '') {
         $listMonth[] = (int)$row['m'];
     }
 
-    // kalau user sebelumnya pilih bulan yang tidak tersedia di tahun itu, reset
     if ($month !== '' && !in_array((int)$month, $listMonth, true)) {
         $month = '';
     }
 }
 
 // 3) Dropdown Nama & Judul (softcode dari DB)
-// (tidak tergantung year supaya sederhana; kalau mau tergantung year juga bisa)
-
 $listNama = [];
 $qNama = "SELECT DISTINCT nama FROM evaluasi WHERE nama IS NOT NULL AND nama <> '' ORDER BY nama ASC";
 $rNama = pg_query($conn, $qNama);
@@ -117,9 +109,7 @@ while ($row = pg_fetch_assoc($rJudul)) {
 }
 
 // ------------------------
-// 4) Query data grafik (rata-rata per bulan atau per tanggal)
-// - Jika year dipilih => GROUP BY bulan (output bulan saja, seperti kamu minta)
-// - Jika year kosong => GROUP BY tanggal (biar tetap bisa lihat tren harian semua data)
+// 4) Query data grafik
 // ------------------------
 $conditions = [];
 $params = [];
@@ -159,71 +149,45 @@ $where = '';
 if (!empty($conditions)) {
     $where = 'WHERE ' . implode(' AND ', $conditions);
 }
-// wajib: filter data waktu yang valid supaya $waktuSql tidak error
 if ($where !== '') {
     $where .= " AND $validWaktu";
 } else {
     $where = "WHERE $validWaktu";
 }
 
-
 $title = !empty($titleParts) ? implode(' | ', $titleParts) : 'Semua Data';
 
-// Expression rata-rata (biar gak ketik ulang)
-$avgExpr = "ROUND(AVG((
-    tema_pelatihan + ketepatan_waktu + suasana + kelengkapan_materi +
-    servis_penyelenggara + alat_bantu_pelaksanaan + penguasaan_masalah_pembicara +
-    cara_penyajian_pembicara + manfaat_materi + interaksi_peserta_pembicara +
-    penguasaan_masalah_narasumber + cara_penyajian_narasumber + makanan +
-    sound_system + layanan_hotel
-) / 15.0), 1)";
+$resetUrl = "index.php?p=grafik";
 
-// Kalau year dipilih -> output BULAN (sesuai permintaan)
-if ($year !== '') {
-    $query = "
-        SELECT
-            EXTRACT(MONTH FROM $waktuSql)::int AS label,
-            $avgExpr AS rata_rata
-        FROM evaluasi
-        $where
-        GROUP BY label
-        ORDER BY label ASC
-    ";
-} else {
-    // Kalau tidak pilih year -> output per TANGGAL (default semua data)
-    $query = "
-        SELECT
-            DATE($waktuSql) AS label,
-            $avgExpr AS rata_rata
-        FROM evaluasi
-        $where
-        GROUP BY label
-        ORDER BY label ASC
-    ";
-}
+// MODE = HORIZONTAL BAR PER PESERTA
+
+//batas max peserta (supaya rapi)
+$MAX_PESERTA = 30; 
+
+//query ambil jumlah pelatihan per peserta pada periode filter (bulan/tahun sudah difilter lewat $where)
+$query = "
+    SELECT
+        MIN(nama) AS peserta,
+        COUNT(*)::int AS jumlah_pelatihan
+    FROM evaluasi
+    $where
+    GROUP BY lower(trim(nama))
+    ORDER BY jumlah_pelatihan DESC, peserta ASC
+    LIMIT $MAX_PESERTA
+";
 
 $result = pg_query_params($conn, $query, $params);
-$data = [];
-while ($row = pg_fetch_assoc($result)) {
-    $data[] = $row;
+if (!$result) {
+    die("Query gagal: " . pg_last_error($conn));
 }
 
-// Labels untuk chart (kalau year dipilih, label bulan dipad jadi 01..12)
+//labels = nama peserta, values = jumlah pelatihan
 $labels = [];
-foreach ($data as $r) {
-    if ($year !== '') {
-        $labels[] = str_pad((string)$r['label'], 2, '0', STR_PAD_LEFT);
-    } else {
-        $labels[] = $r['label'];
-    }
+$values = [];
+while ($row = pg_fetch_assoc($result)) {
+    $labels[] = $row['peserta'];
+    $values[] = (int)$row['jumlah_pelatihan'];
 }
-$values = array_map('floatval', array_column($data, 'rata_rata'));
-
-// ------------------------
-// 5) Reset link yang "sesuai"
-// - kalau user sedang filter apa pun, reset balik ke grafik kosong
-// ------------------------
-$resetUrl = "index.php?p=grafik";
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -327,15 +291,15 @@ $resetUrl = "index.php?p=grafik";
             <a href="index.php" class="btn btn-back">← Kembali ke Index</a>
         </div>
 
-        <h2>📊 Grafik Evaluasi (<?= htmlspecialchars($title) ?>)</h2>
+        <h2>📊 Grafik Evaluasi Pelatihan (<?= htmlspecialchars($title) ?>)</h2>
         <div class="hint">
-            Pilih Tahun untuk melihat ringkasan per bulan. Nama & Judul bisa digabung.
+            Bar kesamping: tiap bar = nama peserta, nilai = jumlah pelatihan pada periode yang dipilih (top <?= (int)$MAX_PESERTA ?>).
         </div>
 
         <form method="GET" action="index.php" class="filter">
             <input type="hidden" name="p" value="grafik">
 
-            <!-- YEAR (softcode) -->
+            <!-- YEAR -->
             <select name="year" onchange="this.form.submit()">
                 <option value="">Semua Tahun</option>
                 <?php foreach ($listYear as $y): ?>
@@ -345,7 +309,7 @@ $resetUrl = "index.php?p=grafik";
                 <?php endforeach; ?>
             </select>
 
-            <!-- MONTH (softcode, tergantung year) -->
+            <!-- MONTH -->
             <select name="month" <?= ($year === '') ? 'disabled' : '' ?>>
                 <option value="">
                     <?= ($year === '') ? 'Pilih Tahun dulu' : 'Semua Bulan' ?>
@@ -385,34 +349,60 @@ $resetUrl = "index.php?p=grafik";
     </div>
 
     <script>
+        //vertical bar (nama = X, jumlah = Y)
         const labels = <?= json_encode($labels) ?>;
         const values = <?= json_encode($values) ?>;
+
+        //palette profesional
+        const palette = [
+            '#334155', '#475569', '#64748b', '#0f766e', '#0ea5e9',
+            '#2563eb', '#4f46e5', '#7c3aed', '#a21caf', '#be123c',
+            '#9a3412', '#a16207', '#15803d', '#0f172a', '#1f2937'
+        ];
+
+        const barColors = labels.map((_, i) => palette[i % palette.length]);
 
         new Chart(document.getElementById('grafikEvaluasi'), {
             type: 'bar',
             data: {
-                labels: labels,
+                labels,
                 datasets: [{
-                    label: 'Rata-rata Evaluasi',
+                    label: 'Jumlah Pelatihan',
                     data: values,
-                    borderWidth: 1
+                    backgroundColor: barColors, 
+                    borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.raw} pelatihan`
+                        }
+                    }
+                },
                 scales: {
                     y: {
-                        min: 0,
-                        max: 5,
+                        beginAtZero: true,
                         ticks: {
-                            stepSize: 0.5
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false, 
+                            maxRotation: 45, //nama panjang gak tabrakan
+                            minRotation: 0 
                         }
                     }
                 }
             }
         });
     </script>
-
 </body>
 
 </html>
