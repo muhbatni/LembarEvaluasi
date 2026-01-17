@@ -18,9 +18,9 @@ $month = $_GET['month'] ?? '';
 $nama  = $_GET['nama']  ?? '';
 $judul = $_GET['judul'] ?? '';
 
-// ------------------------
+
 // 1) Dropdown Tahun (softcode dari DB)
-// ------------------------
+
 $listYear = [];
 $qYear = "SELECT DISTINCT EXTRACT(YEAR FROM created_at)::int AS y
           FROM evaluasi
@@ -30,7 +30,6 @@ while ($row = pg_fetch_assoc($rYear)) {
     $listYear[] = (int)$row['y'];
 }
 
-// ------------------------
 // 2) Dropdown Bulan (tergantung Tahun)
 // - kalau $year dipilih: hanya bulan yang ada di tahun tsb
 // - kalau $year kosong: bisa tampil semua bulan yang ada di DB (opsional)
@@ -53,10 +52,9 @@ if ($year !== '') {
     }
 }
 
-// ------------------------
 // 3) Dropdown Nama & Judul (softcode dari DB)
 // (tidak tergantung year supaya sederhana; kalau mau tergantung year juga bisa)
-// ------------------------
+
 $listNama = [];
 $qNama = "SELECT DISTINCT nama FROM evaluasi WHERE nama IS NOT NULL AND nama <> '' ORDER BY nama ASC";
 $rNama = pg_query($conn, $qNama);
